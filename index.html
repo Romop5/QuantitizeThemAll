@@ -34,34 +34,53 @@ canvas {
         <form>
           <fieldset>
             <legend>Function</legend>
-            <label for="outputWidth">Width</label>
-            <input type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
-            <button type="button" id="rerender" onclick="input_updateProgram();">Rerender</button>
-          </fieldset>
+            <div class="container">
+              <div class="row">
+                <div class="col-sm-12">
+
+                    <label for="outputWidth">Width</label>
+                    <input type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
+                    <button type="button" id="rerender" onclick="input_updateProgram();">Rerender</button>
+                    <button class="secondary" type="button" onclick="generateFunction();">Generate!</button>
+                </div>
+             </div>
+              <div class="row">
+                  <div class="col-sm-6">
+                        <legend>Transformations</legend>
+                        <select name="transforms" id="inputTransformation"
+                                                  onchange="input_updateTransformation()">
+                          <option value="linear">Identity</option>
+                          <option value="polar">Polar</option>
+                          <option value="circle">Circle inversion</option>
+                        </select>
+
+                  </div>
+                  <div class="col-sm-6">
+                    <legend>Coloring</legend>
+                    <input type="color" id="startColor"/>
+                    <input type="color" id="endColor"/>
+                  </div>
+              </div>
+            </div>
+
+                      </fieldset>
           <fieldset>
-            <legend>Generate!</legend>
-            <button class="secondary" type="button" onclick="generateFunction();">Generate!</button>
-          </fieldset>
-          <fieldset>
-            <legend>Transformations</legend>
-            <select name="transforms" id="inputTransformation"
-                                      onchange="input_updateTransformation()">
-              <option value="linear">Identity</option>
-              <option value="polar">Polar</option>
-              <option value="circle">Circle inversion</option>
+            <legend>Presets</legend>
+            <select name="presets" id="inputPreset"
+                                      onchange="input_setPreset()">
+              <option value="scorpion">Scorpion</option>
+              <option value="lol">lol</option>
             </select>
           </fieldset>
-          <fieldset>
-            <legend>Coloring</legend>
-          </fieldset>
+
           <fieldset>
             <legend>Output image settings</legend>
             <label for="outputWidth">Width</label>
-            <input type="text" id="outputWidth" placeholder="1024"/>
+            <input type="text" id="outputWidth" value="2048"/>
             <label for="outputHeight">Height</label>
-            <input type="text" id="outputHeight" placeholder="1024"/>
+            <input type="text" id="outputHeight" value="2048"/>
           </fieldset>
-          <button type="button" onclick="saveAsImage();">Save as JPG!</button>
+          <button class="primary" type="button" onclick="saveAsImage();">Save as JPG!</button>
         </form>
 
     </div>

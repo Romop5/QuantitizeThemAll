@@ -5,8 +5,10 @@ var strDownloadMime = "image/octet-stream";
 // Vertex Shader - identity
 var vertexShaderLiteral =`
 #define GLSLIFY 1
+out vec2 uvPos;
 void main() {
     // Vertex shader output
+    uvPos = position.xy;
     gl_Position = vec4(position, 1.0);
 }
 `
@@ -49,8 +51,7 @@ function init() {
     scene.add(mesh);
     renderer.render(scene, camera);
 
-    //
-
+    initializeDefaultPresets();
     window.addEventListener('resize', onWindowResize, false);
 
 }
@@ -90,10 +91,24 @@ function saveAsImage() {
     var imgData, imgNode;
 
     try {
-        var strMime = "image/jpeg";
-        imgData = renderer.domElement.toDataURL(strMime);
+        
+        /*
+         * Create new offscreen renderer
+         */
+        var offscreenRenderer = new THREE.WebGLRenderer({
+            preserveDrawingBuffer: true,
+            precision: "highp"
+        });
 
-        saveFile(imgData.replace(strMime, strDownloadMime), "test.jpg");
+        var width = document.getElementById("outputWidth").value;
+        var height = document.getElementById("outputHeight").value;
+        offscreenRenderer.setSize(width, height);
+        offscreenRenderer.render(scene, camera);
+
+        var strMime = "image/png";
+        imgData = offscreenRenderer.domElement.toDataURL(strMime);
+
+        saveFile(imgData.replace(strMime, strDownloadMime), "test.png");
 
     } catch (e) {
         console.log(e);
@@ -132,11 +147,12 @@ function setProgramInputToText(text)
 }
 
 var quantitizeParameters = {
+    program: "x+x",
     transformationType: "linear",
 }
-function quantitize(functionExpression)
+function quantitize()
 {
-   setProgramInputToText(functionExpression);
+   setProgramInputToText(quantitizeParameters.program);
    var fragmentShaderTemplate=`
    vec2 linear(vec2 uv)
    {
@@ -153,10 +169,15 @@ function quantitize(functionExpression)
    {
         return vec2(atan(uv.x,uv.y),sqrt(uv.x*uv.x+ uv.y*uv.y));  
    }
+
+   in vec2 uvPos;
+
    void main() {
        vec2 screenSize = vec2(SCREEN_SIZE);
-       float uv_x = (gl_FragCoord.x/screenSize.x)*2.0-1.0;
-       float uv_y = (gl_FragCoord.y/screenSize.y)*2.0-1.0;
+       //float uv_x = (gl_FragCoord.x/screenSize.x)*2.0-1.0;
+       //float uv_y = (gl_FragCoord.y/screenSize.y)*2.0-1.0;
+       float uv_x = uvPos.x;
+       float uv_y = uvPos.y;
        vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y));
        float x = resultingUv.x;
        float y = resultingUv.y;
@@ -165,7 +186,7 @@ function quantitize(functionExpression)
    }
    `
 
-    var program = functionExpression;
+    var program = quantitizeParameters.program;
     var screenSize = getCanvasSize();
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
@@ -183,12 +204,24 @@ function quantitize(functionExpression)
 
 
 }
+function input_setPreset()
+{
+    console.log("setPreset()");
+    var programName = document.getElementById("inputPreset").value; 
+    console.log("Name:" + programName);
+    var db = localStorage.getItem(programName);
+    quantitizeParameters = JSON.parse(db);
+    quantitize();
+    console.log("Params: " + db);
+}
+
 
 function input_updateProgram()
 {
     console.log("updateProgram()");
     var program = document.getElementById("inputProgram").value; 
-    quantitize(program);
+    quantitizeParameters.program = program;
+    quantitize();
 }
 
 function input_updateTransformation()
@@ -199,8 +232,27 @@ function input_updateTransformation()
     input_updateProgram();
 }
 
+function input_updateColor()
+{
+    console.log("updateColor()");
+    var start = document.getElementById("startColor").value; 
+    var end = document.getElementById("endColor").value; 
+    quantitizeParameters.startColor= start;
+    quantitizeParameters.endColor= end;
+    input_updateProgram();
+}
+
+
+
 var g_mutationContext = {};
 function generateFunction()
 {
-    quantitize("x+x+y");
+    quantitizeParameters.program = "x+x+y";
+    quantitize();
+}
+
+function initializeDefaultPresets()
+{
+    localStorage.setItem("scorpion", JSON.stringify({program: "cos(x*y*4.0+tan(x))", transformationType: "circle"}));
+    localStorage.setItem("lol", JSON.stringify({program: "x*x", transformationType: "linear"}));
 }
