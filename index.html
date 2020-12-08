@@ -57,8 +57,8 @@ canvas {
                   </div>
                   <div class="col-sm-6">
                     <legend>Coloring</legend>
-                    <input type="color" id="startColor"/>
-                    <input type="color" id="endColor"/>
+                    <input type="color" id="startColor" value="#ff0000" onchange="input_updateColor()" />
+                    <input type="color" id="endColor" value="#00ff00" onchange="input_updateColor()"/>
                   </div>
               </div>
             </div>
@@ -68,9 +68,13 @@ canvas {
             <legend>Presets</legend>
             <select name="presets" id="inputPreset"
                                       onchange="input_setPreset()">
-              <option value="scorpion">Scorpion</option>
-              <option value="lol">lol</option>
+                <!--<option value="scorpion">Scorpion</option>-->
+                <!--<option value="lol">lol</option>-->
             </select>
+            <input type="text" id="inputPresetName" placeholder="New preset"/>
+            <button class="primary" type="button" onclick="input_savePreset();">Add!</button>
+            <button class="primary" type="button" onclick="input_exportPresets();">Export!</button>
+            <button class="primary" type="button" onclick="input_importPresets();">Import!</button>
           </fieldset>
 
           <fieldset>

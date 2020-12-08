@@ -61,8 +61,6 @@ function getCanvasSize()
     var parent = document.getElementById("canvas-parent");
     return {width: parent.offsetWidth, 
             height: window.innerHeight*1.0};
-    return {width: window.innerWidth/2.0, 
-            height: window.innerHeight*1.0};
 }
 
 function onWindowResize() {
@@ -149,6 +147,8 @@ function setProgramInputToText(text)
 var quantitizeParameters = {
     program: "x+x",
     transformationType: "linear",
+    startColor: "#FF0000",
+    endColor: "#00FF00",
 }
 function quantitize()
 {
@@ -174,24 +174,33 @@ function quantitize()
 
    void main() {
        vec2 screenSize = vec2(SCREEN_SIZE);
-       //float uv_x = (gl_FragCoord.x/screenSize.x)*2.0-1.0;
-       //float uv_y = (gl_FragCoord.y/screenSize.y)*2.0-1.0;
        float uv_x = uvPos.x;
        float uv_y = uvPos.y;
        vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y));
        float x = resultingUv.x;
        float y = resultingUv.y;
        float program = PROGRAM;
-       gl_FragColor = vec4(program,0.0,0.0, 1.0);
+       float parameter = clamp(program, 0.0,1.0);
+
+       vec3 colorStart = vec3(START_COLOR)/255.0;
+       vec3 colorEnd = vec3(END_COLOR)/255.0;
+       vec3 resultColor = mix(colorStart, colorEnd, parameter);
+       gl_FragColor = vec4(resultColor, 1.0);
    }
    `
 
     var program = quantitizeParameters.program;
     var screenSize = getCanvasSize();
+
+    var startCol = hexToRgb(quantitizeParameters.startColor);
+    var endCol= hexToRgb(quantitizeParameters.endColor);
+
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
         .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
-        .replace("TRANSFORMATION", quantitizeParameters.transformationType);
+        .replace("TRANSFORMATION", quantitizeParameters.transformationType)
+        .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
+        .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     console.log("New FS:"+newFragmentShader);
 
     var geometry = new THREE.PlaneBufferGeometry(2, 2);
@@ -204,17 +213,40 @@ function quantitize()
 
 
 }
+
+function updateHTMLFromParams()
+{
+    document.getElementById("inputProgram").value = quantitizeParameters.program; 
+    document.getElementById("inputTransformation").value = quantitizeParameters.transformationType; 
+    document.getElementById("startColor").value = quantitizeParameters.startColor; 
+    document.getElementById("endColor").value = quantitizeParameters.endColor; 
+}
+
 function input_setPreset()
 {
     console.log("setPreset()");
     var programName = document.getElementById("inputPreset").value; 
     console.log("Name:" + programName);
     var db = localStorage.getItem(programName);
-    quantitizeParameters = JSON.parse(db);
+    params = JSON.parse(db);
+
+    for (var key in params) {
+        if (params.hasOwnProperty(key)) {
+            quantitizeParameters[key] = params[key];
+        }
+    }
     quantitize();
     console.log("Params: " + db);
+    updateHTMLFromParams()
 }
 
+function input_savePreset()
+{
+    console.log("savePreset()");
+    var programName = document.getElementById("inputPresetName").value; 
+    storePreset(programName, quantitizeParameters);
+    addPresetToHTML(programName)
+}
 
 function input_updateProgram()
 {
@@ -242,8 +274,6 @@ function input_updateColor()
     input_updateProgram();
 }
 
-
-
 var g_mutationContext = {};
 function generateFunction()
 {
@@ -253,6 +283,44 @@ function generateFunction()
 
 function initializeDefaultPresets()
 {
-    localStorage.setItem("scorpion", JSON.stringify({program: "cos(x*y*4.0+tan(x))", transformationType: "circle"}));
-    localStorage.setItem("lol", JSON.stringify({program: "x*x", transformationType: "linear"}));
+    storePreset("scorpion", JSON.stringify({program: "cos(x*y*4.0+tan(x))", transformationType: "circle"}));
+    storePreset("lol", JSON.stringify({program: "x*x", transformationType: "linear"}));
+    storePreset("circles", JSON.stringify({program: "min(min(5.0*pow(x,5.0),x*x*4.0), sin(x*30.0))", transformationType: "circle"}));
+
+    const list = JSON.parse(localStorage.getItem("qat-list"));
+    list.forEach(element =>  addPresetToHTML(element));
+}
+
+function storePreset(presetName, parameters)
+{
+    const list = JSON.parse(localStorage.getItem("qat-list"));
+    if(list != null)
+    {
+        if(list.includes(presetName))
+            return;
+        list.push(presetName);
+    } else
+    {
+        list = [presetName];
+    }
+    localStorage.setItem("qat-list",JSON.stringify(list));
+    localStorage.setItem(presetName,JSON.stringify(parameters));
+}
+
+function addPresetToHTML(presetName)
+{
+    var optElement = document.createElement('option');
+    optElement.value = presetName;
+    optElement.innerHTML = presetName;
+    document.getElementById("inputPreset").appendChild(optElement)
+}
+
+//https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
 }
