@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="TODO">
+    <meta name="description" content="Yet another function quantitizer">
+    <meta name="author" content="Roman Dobias">
+    <title>QTA</title>
+    <link rel="stylesheet"
+    href="https://gitcdn.link/repo/Chalarangelo/mini.css/master/dist/mini-default.css" />
+    <script type="text/javascript" src="js/three.min.js"></script>
+    <script type="text/javascript" src="js/renderer.js"></script>
+</head>
+<body>
+<style>
+body {
+    padding: 0;
+    margin: 0;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6" id='canvas-parent'>
+        <div id='canv'>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <h1>QuantitizeThemAll</h1>
+        <form>
+          <fieldset>
+            <legend>Function</legend>
+            <label for="outputWidth">Width</label>
+            <input type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
+            <button type="button" id="rerender" onclick="input_updateProgram();">Rerender</button>
+          </fieldset>
+          <fieldset>
+            <legend>Generate!</legend>
+            <button class="secondary" type="button" onclick="generateFunction();">Generate!</button>
+          </fieldset>
+          <fieldset>
+            <legend>Transformations</legend>
+            <select name="transforms" id="inputTransformation"
+                                      onchange="input_updateTransformation()">
+              <option value="linear">Identity</option>
+              <option value="polar">Polar</option>
+              <option value="circle">Circle inversion</option>
+            </select>
+          </fieldset>
+          <fieldset>
+            <legend>Coloring</legend>
+          </fieldset>
+          <fieldset>
+            <legend>Output image settings</legend>
+            <label for="outputWidth">Width</label>
+            <input type="text" id="outputWidth" placeholder="1024"/>
+            <label for="outputHeight">Height</label>
+            <input type="text" id="outputHeight" placeholder="1024"/>
+          </fieldset>
+          <button type="button" onclick="saveAsImage();">Save as JPG!</button>
+        </form>
+
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    window.onload = function(){
+        init();
+        animate();
+        input_updateProgram();
+    }
+</script>
+</body>
+</html>
