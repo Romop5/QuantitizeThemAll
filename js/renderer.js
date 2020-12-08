@@ -277,7 +277,7 @@ function input_updateColor()
 var g_mutationContext = {};
 function generateFunction()
 {
-    quantitizeParameters.program = "x+x+y";
+    quantitizeParameters.program = generateExpression(6);
     quantitize();
 }
 
