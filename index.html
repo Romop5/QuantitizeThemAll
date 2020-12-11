@@ -39,10 +39,10 @@ canvas {
               <div class="row">
                 <div class="col-sm-12">
 
-                    <label for="outputWidth">Width</label>
-                    <input type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
+                    <input style="width: 100%;" type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
                     <button type="button" id="rerender" onclick="input_updateProgram();">Rerender</button>
-                    <button class="secondary" type="button" onclick="generateFunction();">Generate!</button>
+                    <button class="secondary" type="button" onclick="input_generateFunction();">Generate!</button>
+                    <button class="secondary" type="button" onclick="input_revertGenerateFunction();">Back!</button>
                 </div>
              </div>
               <div class="row">
@@ -59,6 +59,7 @@ canvas {
                   <div class="col-sm-6">
                     <legend>Coloring</legend>
                     <input type="color" id="startColor" value="#ff0000" onchange="input_updateColor()" />
+                    <button class="primary small" type="button" onclick="input_invertColor();"><=></button>
                     <input type="color" id="endColor" value="#00ff00" onchange="input_updateColor()"/>
                   </div>
               </div>

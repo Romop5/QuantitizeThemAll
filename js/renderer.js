@@ -131,6 +131,11 @@ var saveFile = function (strData, filename) {
 //-----------------------------------------------------------------------------
 // Functionality
 //-----------------------------------------------------------------------------
+// Taken from https://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
+function deepClone(object)
+{
+    return JSON.parse(JSON.stringify(object));
+}
 
 // Taken from https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene/48722282
 function resetScene()
@@ -150,6 +155,7 @@ var quantitizeParameters = {
     startColor: "#FF0000",
     endColor: "#00FF00",
 }
+var quantitizeParametersStack = [quantitizeParameters]
 function quantitize()
 {
    setProgramInputToText(quantitizeParameters.program);
@@ -201,7 +207,7 @@ function quantitize()
         .replace("TRANSFORMATION", quantitizeParameters.transformationType)
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
-    console.log("New FS:"+newFragmentShader);
+    //console.log("New FS:"+newFragmentShader);
 
     var geometry = new THREE.PlaneBufferGeometry(2, 2);
     var material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
@@ -274,10 +280,45 @@ function input_updateColor()
     input_updateProgram();
 }
 
-var g_mutationContext = {};
-function generateFunction()
+function input_invertColor()
 {
+    console.log("invertColor()");
+    var start = document.getElementById("startColor").value;
+    var end = document.getElementById("endColor").value;
+    document.getElementById("startColor").value = end;
+    document.getElementById("endColor").value = start;
+    input_updateColor();
+}
+
+function pushCurrentParameters()
+{
+    quantitizeParametersStack.push(deepClone(quantitizeParameters));
+}
+
+function popCurrentParameters()
+{
+    console.log(quantitizeParametersStack)
+    if(quantitizeParametersStack.length > 1)
+    {
+        quantitizeParameters = quantitizeParametersStack.pop()
+    } else {
+        quantitizeParameters = quantitizeParametersStack[0];
+    }
+    console.log(quantitizeParameters)
+    updateHTMLFromParams();
+}
+
+var g_mutationContext = {};
+function input_generateFunction()
+{
+    pushCurrentParameters();
+    // Store current parameters
     quantitizeParameters.program = generateExpression(6);
+    quantitize();
+}
+function input_revertGenerateFunction()
+{
+    popCurrentParameters();
     quantitize();
 }
 
