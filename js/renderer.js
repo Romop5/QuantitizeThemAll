@@ -137,6 +137,16 @@ function deepClone(object)
     return JSON.parse(JSON.stringify(object));
 }
 
+// Taken from https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
 // Taken from https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene/48722282
 function resetScene()
 {
@@ -149,16 +159,16 @@ function setProgramInputToText(text)
    document.getElementById("inputProgram").value = text; 
 }
 
-var quantitizeParameters = {
+var g_quantitizeParameters = {
     program: "x+x",
     transformationType: "linear",
     startColor: "#FF0000",
     endColor: "#00FF00",
 }
-var quantitizeParametersStack = [quantitizeParameters]
+var g_quantitizeParametersStack = [g_quantitizeParameters]
 function quantitize()
 {
-   setProgramInputToText(quantitizeParameters.program);
+   setProgramInputToText(g_quantitizeParameters.program);
    var fragmentShaderTemplate=`
    vec2 linear(vec2 uv)
    {
@@ -195,16 +205,16 @@ function quantitize()
    }
    `
 
-    var program = quantitizeParameters.program;
+    var program = g_quantitizeParameters.program;
     var screenSize = getCanvasSize();
 
-    var startCol = hexToRgb(quantitizeParameters.startColor);
-    var endCol= hexToRgb(quantitizeParameters.endColor);
+    var startCol = hexToRgb(g_quantitizeParameters.startColor);
+    var endCol= hexToRgb(g_quantitizeParameters.endColor);
 
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
         .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
-        .replace("TRANSFORMATION", quantitizeParameters.transformationType)
+        .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     //console.log("New FS:"+newFragmentShader);
@@ -222,10 +232,10 @@ function quantitize()
 
 function updateHTMLFromParams()
 {
-    document.getElementById("inputProgram").value = quantitizeParameters.program; 
-    document.getElementById("inputTransformation").value = quantitizeParameters.transformationType; 
-    document.getElementById("startColor").value = quantitizeParameters.startColor; 
-    document.getElementById("endColor").value = quantitizeParameters.endColor; 
+    document.getElementById("inputProgram").value = g_quantitizeParameters.program; 
+    document.getElementById("inputTransformation").value = g_quantitizeParameters.transformationType; 
+    document.getElementById("startColor").value = g_quantitizeParameters.startColor; 
+    document.getElementById("endColor").value = g_quantitizeParameters.endColor; 
 }
 
 function input_setPreset()
@@ -238,7 +248,7 @@ function input_setPreset()
 
     for (var key in params) {
         if (params.hasOwnProperty(key)) {
-            quantitizeParameters[key] = params[key];
+            g_quantitizeParameters[key] = params[key];
         }
     }
     quantitize();
@@ -250,7 +260,7 @@ function input_savePreset()
 {
     console.log("savePreset()");
     var programName = document.getElementById("inputPresetName").value; 
-    storePreset(programName, quantitizeParameters);
+    storePreset(programName, g_quantitizeParameters);
     addPresetToHTML(programName)
 }
 
@@ -258,7 +268,7 @@ function input_updateProgram()
 {
     console.log("updateProgram()");
     var program = document.getElementById("inputProgram").value; 
-    quantitizeParameters.program = program;
+    g_quantitizeParameters.program = program;
     quantitize();
 }
 
@@ -266,7 +276,7 @@ function input_updateTransformation()
 {
     console.log("updateTransform()");
     var type = document.getElementById("inputTransformation").value; 
-    quantitizeParameters.transformationType = type;
+    g_quantitizeParameters.transformationType = type;
     input_updateProgram();
 }
 
@@ -275,8 +285,8 @@ function input_updateColor()
     console.log("updateColor()");
     var start = document.getElementById("startColor").value; 
     var end = document.getElementById("endColor").value; 
-    quantitizeParameters.startColor= start;
-    quantitizeParameters.endColor= end;
+    g_quantitizeParameters.startColor= start;
+    g_quantitizeParameters.endColor= end;
     input_updateProgram();
 }
 
@@ -292,28 +302,27 @@ function input_invertColor()
 
 function pushCurrentParameters()
 {
-    quantitizeParametersStack.push(deepClone(quantitizeParameters));
+    g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
 }
 
 function popCurrentParameters()
 {
-    console.log(quantitizeParametersStack)
-    if(quantitizeParametersStack.length > 1)
+    console.log(g_quantitizeParametersStack)
+    if(g_quantitizeParametersStack.length > 1)
     {
-        quantitizeParameters = quantitizeParametersStack.pop()
+        g_quantitizeParameters = g_quantitizeParametersStack.pop()
     } else {
-        quantitizeParameters = quantitizeParametersStack[0];
+        g_quantitizeParameters = g_quantitizeParametersStack[0];
     }
-    console.log(quantitizeParameters)
+    console.log(g_quantitizeParameters)
     updateHTMLFromParams();
 }
 
-var g_mutationContext = {};
 function input_generateFunction()
 {
     pushCurrentParameters();
     // Store current parameters
-    quantitizeParameters.program = generateExpression(6);
+    g_quantitizeParameters.program = generateExpression(6);
     quantitize();
 }
 function input_revertGenerateFunction()
@@ -356,12 +365,4 @@ function addPresetToHTML(presetName)
     document.getElementById("inputPreset").appendChild(optElement)
 }
 
-//https://stackoverflow.com/questions/5623838/rgb-to-hex-and-hex-to-rgb
-function hexToRgb(hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null;
-}
+
