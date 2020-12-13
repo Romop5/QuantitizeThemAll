@@ -318,10 +318,39 @@ function popCurrentParameters()
     updateHTMLFromParams();
 }
 
+var g_generatorSettings = {}
+function input_updateGeneratorRules()
+{
+    var binaryFunc = []
+    var unaryFunc= []
+    if(document.getElementById("allow_modulo").value == "on")
+        binaryFunc.push("mod");
+
+    if(document.getElementById("allow_sin").value == "on")
+        unaryFunc.push("sin");
+
+    if(document.getElementById("allow_minmax").value == "on")
+    {
+        binaryFunc.push("min");
+        binaryFunc.push("max");
+    }
+
+    g_generatorSettings = {
+        binary: binaryFunc,
+        unary: unaryFunc,
+        constants: document.getElementById("allow_constant").value
+    }
+
+    input_generateFunction();
+}
+
 function input_generateFunction()
 {
     pushCurrentParameters();
     // Store current parameters
+    //g_quantitizeParameters.program = generateExpression(6);
+    var grammar = createGrammarFromConfig(g_generatorSettings);
+    //g_quantitizeParameters.program = generateExpressionFromGrammar(grammar, 6);
     g_quantitizeParameters.program = generateExpression(6);
     quantitize();
 }
@@ -364,5 +393,6 @@ function addPresetToHTML(presetName)
     optElement.innerHTML = presetName;
     document.getElementById("inputPreset").appendChild(optElement)
 }
+
 
 

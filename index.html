@@ -46,6 +46,24 @@ canvas {
                 </div>
              </div>
               <div class="row">
+                  <div class="col-sm-12">
+                        <legend>Generator settings</legend>
+
+                        <input type="checkbox" id="allow_modulo" value="Allow modulo" onchange="input_updateGeneratorRules();">
+                        <label for="allow_modulo">mod</label>
+
+                        <input type="checkbox" id="allow_sin" onchange="input_updateGeneratorRules();">
+                        <label for="allow_sin">sin,cos</label>
+
+                        <input type="checkbox" id="allow_minmax" onchange="input_updateGeneratorRules();">
+                        <label for="allow_minmax">min max</label>
+
+                        <input type="checkbox" id="allow_constant" onchange="input_updateGeneratorRules();">
+                        <label for="allow_constant">random constants</label>
+                  </div>
+              </div>
+
+              <div class="row">
                   <div class="col-sm-6">
                         <legend>Transformations</legend>
                         <select name="transforms" id="inputTransformation"

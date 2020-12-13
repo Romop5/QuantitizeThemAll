@@ -1,11 +1,5 @@
-function generateExpression(maxIters)
+function generateExpressionFromGrammar(rules, maxIters)
 {
-    var rules = 
-    {
-        "E": [ ["(","E","+","E",")"],["(","E","*","E", ")"],["sin(","E", ")"],
-                        ["cos(","E", ")"],["mod(","E",",","C",")"], ["x"], [ "y"], ["C"]]
-    }
-
     /*
         E -> sin ( E ) | x | y
     */
@@ -39,6 +33,45 @@ function generateExpression(maxIters)
         }
     );
     return toStringExpression(current);
+
+}
+
+function generateExpression(maxIters)
+{
+    var rules =
+    {
+        "E": [ ["(","E","+","E",")"],["(","E","*","E", ")"],["sin(","E", ")"],
+                        ["cos(","E", ")"],["mod(","E",",","C",")"], ["x"], [ "y"], ["C"]]
+    }
+    return generateExpressionFromGrammar(rules, maxIters);
+}
+
+function createGrammarFromConfig(config)
+{
+    var alternatives = []
+    if(config.hasOwnProperty("binary"))
+    {
+        var binaryFunc = config.binary;
+        for(var i = 0; i < binaryFunc.length; i++)
+            alternatives.push([binaryFunc[i],"(","E",",","E",")"]);
+    }
+
+    if(config.hasOwnProperty("unary"))
+    {
+        var unaryFunc = config.unary;
+        for(var i = 0; i < unaryFunc.length; i++)
+            alternatives.push([unaryFunc[i],"(","E",")"]);
+    }
+
+    if(config.hasOwnProperty("constants") && config.constants == "on")
+    {
+        alternatives.push(["C"])
+    }
+
+    // Always push inputs
+    alternatives.push(["x"])
+    alternatives.push(["y"])
+    return ["E", alternatives]
 }
 
 function toStringExpression(expr)
