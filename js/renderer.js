@@ -186,6 +186,11 @@ function quantitize()
         return vec2(atan(uv.x,uv.y),sqrt(uv.x*uv.x+ uv.y*uv.y));  
    }
 
+   float inv(float x)
+   {
+    return 1.0/x;
+   }
+
    in vec2 uvPos;
 
    void main() {
@@ -318,30 +323,63 @@ function popCurrentParameters()
     updateHTMLFromParams();
 }
 
-var g_generatorSettings = {}
+function getFormElementValue(elementID, defaultVal)
+{
+    element = document.getElementById(elementID);
+    if(element != null)
+        return element.value;
+    return defaultVal;
+}
+function isFormElementChecked(elementID)
+{
+    element = document.getElementById(elementID);
+    if(element != null)
+        return element.checked;
+    return false;
+}
+
+
+var g_generatorSettings = {minIters: 1, maxIters: 5}
 function input_updateGeneratorRules()
 {
     var binaryFunc = []
     var unaryFunc= []
-    if(document.getElementById("allow_modulo").value == "on")
+    if(isFormElementChecked("allow_modulo"))
+    {
         binaryFunc.push("mod");
+    }
 
-    if(document.getElementById("allow_sin").value == "on")
+    if(isFormElementChecked("allow_abs"))
+    {
+        unaryFunc.push("abs");
+    }
+
+    if(isFormElementChecked("allow_inv"))
+    {
+        unaryFunc.push("inv");
+    }
+
+    if(isFormElementChecked("allow_sin"))
+    {
         unaryFunc.push("sin");
+    }
 
-    if(document.getElementById("allow_minmax").value == "on")
+    if(isFormElementChecked("allow_minmax"))
     {
         binaryFunc.push("min");
         binaryFunc.push("max");
     }
 
-    g_generatorSettings = {
+    g_generatorSettings = deepClone({
+        minIters: getFormElementValue("minIters", 1),
+        maxIters: getFormElementValue("maxIters", 5),
         binary: binaryFunc,
         unary: unaryFunc,
-        constants: document.getElementById("allow_constant").value
-    }
+        constants: isFormElementChecked("allow_constant"),
+        oscillations: getFormElementValue("oscillation", 30.0),
+    })
 
-    input_generateFunction();
+    //input_generateFunction();
 }
 
 function input_generateFunction()
@@ -350,8 +388,12 @@ function input_generateFunction()
     // Store current parameters
     //g_quantitizeParameters.program = generateExpression(6);
     var grammar = createGrammarFromConfig(g_generatorSettings);
-    //g_quantitizeParameters.program = generateExpressionFromGrammar(grammar, 6);
-    g_quantitizeParameters.program = generateExpression(6);
+    g_quantitizeParameters.program = generateExpressionFromGrammar(grammar,
+        g_generatorSettings.minIters,
+        g_generatorSettings.maxIters,
+        g_generatorSettings.oscillations
+    );
+    //g_quantitizeParameters.program = generateExpression(6);
     quantitize();
 }
 function input_revertGenerateFunction()

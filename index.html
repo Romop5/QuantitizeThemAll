@@ -48,6 +48,16 @@ canvas {
               <div class="row">
                   <div class="col-sm-12">
                         <legend>Generator settings</legend>
+                        <label for="minIters">Minimum iterations:</label>
+                        <input type="text" id="minIters" onchange="input_updateGeneratorRules();">
+
+                        <label for="maxIters">Minimum iterations:</label>
+                        <input type="text" id="maxIters" onchange="input_updateGeneratorRules();">
+
+                        <label for="maxIters">Randomizer oscillations:</label>
+                        <input type="text" id="oscillation" onchange="input_updateGeneratorRules();">
+
+                        <br>
 
                         <input type="checkbox" id="allow_modulo" value="Allow modulo" onchange="input_updateGeneratorRules();">
                         <label for="allow_modulo">mod</label>
@@ -57,6 +67,12 @@ canvas {
 
                         <input type="checkbox" id="allow_minmax" onchange="input_updateGeneratorRules();">
                         <label for="allow_minmax">min max</label>
+
+                        <input type="checkbox" id="allow_abs" onchange="input_updateGeneratorRules();">
+                        <label for="allow_abs">abs</label>
+
+                        <input type="checkbox" id="allow_inv" onchange="input_updateGeneratorRules();">
+                        <label for="allow_inv">inv</label>
 
                         <input type="checkbox" id="allow_constant" onchange="input_updateGeneratorRules();">
                         <label for="allow_constant">random constants</label>

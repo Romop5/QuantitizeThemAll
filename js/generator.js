@@ -1,27 +1,38 @@
-function generateExpressionFromGrammar(rules, maxIters)
+function generateExpressionFromGrammar(rules, minIters, maxIters, oscillation)
 {
-    /*
-        E -> sin ( E ) | x | y
-    */
+    // Clamp miniters to maxiters at most
+    minIters = (minIters > maxIters)?maxIters:minIters;
+    var i = 0;
     var current = [ "E" ];
-    for(var i = 0; i < maxIters; i++)
+    var maxAttempts = 200;
+    // while generation terminates before mininum iterations
+    while(i < minIters && maxAttempts > 0)
     {
-        var next = []
-        for(var j = 0; j < current.length; j++)
+        current = [ "E" ];
+        var shouldTerminate = false;
+        // try new generation
+        for(i = 0; i < maxIters && !shouldTerminate; i++)
         {
-            const element = current[j];
-            if(!rules.hasOwnProperty(element))
+            shouldTerminate = true;
+            var next = []
+            for(var j = 0; j < current.length; j++)
             {
-               next.push(element);
-               continue;
+                const element = current[j];
+                if(!rules.hasOwnProperty(element))
+                {
+                   next.push(element);
+                   continue;
+                }
+                shouldTerminate = false;
+                var alternatives = rules[element];
+                const randomRule= alternatives[Math.floor(Math.random() * alternatives.length)];
+                console.log("Rule:" , randomRule);
+                next = next.concat(randomRule);
+                console.log("After concat:" , next);
             }
-            var alternatives = rules[element];
-            const randomRule= alternatives[Math.floor(Math.random() * alternatives.length)];
-            console.log("Rule:" , randomRule);
-            next = next.concat(randomRule);
-            console.log("After concat:" , next);
+            current = next;
         }
-        current = next;
+        maxAttempts = maxAttempts-1;
     }
 
     current.forEach(function (part,index)
@@ -29,21 +40,21 @@ function generateExpressionFromGrammar(rules, maxIters)
             if(part == "E")
                 current[index] = "x";
             if(part == "C")
-                current[index] = (Math.random()*30.0).toFixed(2).toString();
+                current[index] = (Math.random()*oscillation).toFixed(2).toString();
         }
     );
     return toStringExpression(current);
 
 }
 
-function generateExpression(maxIters)
+function generateExpression(minIters, maxIters)
 {
     var rules =
     {
         "E": [ ["(","E","+","E",")"],["(","E","*","E", ")"],["sin(","E", ")"],
                         ["cos(","E", ")"],["mod(","E",",","C",")"], ["x"], [ "y"], ["C"]]
     }
-    return generateExpressionFromGrammar(rules, maxIters);
+    return generateExpressionFromGrammar(rules, minIters, maxIters,30);
 }
 
 function createGrammarFromConfig(config)
@@ -53,7 +64,18 @@ function createGrammarFromConfig(config)
     {
         var binaryFunc = config.binary;
         for(var i = 0; i < binaryFunc.length; i++)
-            alternatives.push([binaryFunc[i],"(","E",",","E",")"]);
+        {
+            var funcName = binaryFunc[i];
+            switch(funcName)
+            {
+                case "mod":
+                    alternatives.push([funcName,"(","E",",","C",")"]);
+                    break;
+                default:
+                    alternatives.push([funcName,"(","E",",","E",")"]);
+                    break;
+            }
+        }
     }
 
     if(config.hasOwnProperty("unary"))
@@ -63,7 +85,7 @@ function createGrammarFromConfig(config)
             alternatives.push([unaryFunc[i],"(","E",")"]);
     }
 
-    if(config.hasOwnProperty("constants") && config.constants == "on")
+    if(config.hasOwnProperty("constants") && config.constants)
     {
         alternatives.push(["C"])
     }
@@ -71,7 +93,11 @@ function createGrammarFromConfig(config)
     // Always push inputs
     alternatives.push(["x"])
     alternatives.push(["y"])
-    return ["E", alternatives]
+
+    // Always add *+ to form binary function
+    alternatives.push(["E","+","E"])
+    alternatives.push(["E","*","E"])
+    return {"E": alternatives}
 }
 
 function toStringExpression(expr)
