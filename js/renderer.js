@@ -54,6 +54,7 @@ function init() {
     initializeDefaultPresets();
     window.addEventListener('resize', onWindowResize, false);
 
+    updateHTMLFromParams()
 }
 
 function getCanvasSize()
@@ -104,7 +105,7 @@ function saveAsImage() {
         offscreenRenderer.render(scene, camera);
 
         var strMime = "image/png";
-        imgData = offscreenRenderer.domElement.toDataURL(strMime);
+        imgData = offscreenRenderer.domElement.toDataURL(strMime,1.0);
 
         saveFile(imgData.replace(strMime, strDownloadMime), "test.png");
 
@@ -162,8 +163,8 @@ function setProgramInputToText(text)
 var g_quantitizeParameters = {
     program: "x+x",
     transformationType: "linear",
-    startColor: "#FF0000",
-    endColor: "#00FF00",
+    startColor: "#FF5800",
+    endColor: "#FD3300",
 }
 var g_quantitizeParametersStack = [g_quantitizeParameters]
 function quantitize()
@@ -241,6 +242,11 @@ function updateHTMLFromParams()
     document.getElementById("inputTransformation").value = g_quantitizeParameters.transformationType; 
     document.getElementById("startColor").value = g_quantitizeParameters.startColor; 
     document.getElementById("endColor").value = g_quantitizeParameters.endColor; 
+
+    document.getElementById("maxIters").value = g_generatorSettings.maxIters;
+    document.getElementById("minIters").value = g_generatorSettings.minIters;
+    document.getElementById("oscillation").value = g_generatorSettings.oscillations;
+    document.getElementById("allow_constant").checked = g_generatorSettings.constants;
 }
 
 function input_setPreset()
@@ -268,6 +274,65 @@ function input_savePreset()
     storePreset(programName, g_quantitizeParameters);
     addPresetToHTML(programName)
 }
+
+function input_exportPresets()
+{
+    console.log("exportPresets()");
+
+    var totalSettings = {}
+    var presets = getListOfAvailablePresets();
+    for(var i = 0; i < presets.length; i++)
+    {
+        var programName = presets[i];
+        var presetSettings = JSON.parse(localStorage.getItem(programName));
+        totalSettings[programName] = presetSettings;
+    }
+
+
+    let element = document.createElement("input")
+    element.value = JSON.stringify(totalSettings);
+    document.body.appendChild(element)
+
+    element.select();
+    element.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Saved to clip board");
+    element.remove();
+}
+
+function input_loadFromPresetFile(file)
+{
+    var obj = JSON.parse(file)
+    var keys = Object.keys(obj)
+    for(var i = 0; i < keys.length; i++)
+    {
+        var keyName = keys[i]
+        var presetSettings = obj[keyName]
+        //console.log(keyName,presetSettings)
+        storePreset(keyName, presetSettings);
+    }
+    cleanPresetList();
+}
+function input_importPresets()
+{
+    const selectedFile = document.getElementById('importFile').files[0];
+    console.log(selectedFile)
+    const objectURL = window.URL.createObjectURL(selectedFile);
+    console.log(objectURL);
+
+    const reader = new FileReader();
+    console.log(reader)
+    reader.addEventListener("load", function () {
+        var res = reader.result
+        res = res.replace(/.*base64,/,"")
+        res = window.atob(res)
+        //console.log(res)
+        input_loadFromPresetFile(res);
+
+    }, false);
+    reader.readAsDataURL(selectedFile);
+}
+
 
 function input_updateProgram()
 {
@@ -339,7 +404,7 @@ function isFormElementChecked(elementID)
 }
 
 
-var g_generatorSettings = {minIters: 1, maxIters: 5}
+var g_generatorSettings = {minIters: 1, maxIters: 5, constants: true, oscillations: 30.0}
 function input_updateGeneratorRules()
 {
     var binaryFunc = []
@@ -402,19 +467,35 @@ function input_revertGenerateFunction()
     quantitize();
 }
 
+function cleanPresetList()
+{
+    const node = document.getElementById("inputPreset");
+    while (node.firstChild) {
+        node.removeChild(node.lastChild);
+    }
+}
+
 function initializeDefaultPresets()
 {
     storePreset("scorpion", JSON.stringify({program: "cos(x*y*4.0+tan(x))", transformationType: "circle"}));
     storePreset("lol", JSON.stringify({program: "x*x", transformationType: "linear"}));
     storePreset("circles", JSON.stringify({program: "min(min(5.0*pow(x,5.0),x*x*4.0), sin(x*30.0))", transformationType: "circle"}));
+    updateHTMLPresetList();
 
+}
+function updateHTMLPresetList()
+{
     const list = JSON.parse(localStorage.getItem("qat-list"));
     list.forEach(element =>  addPresetToHTML(element));
 }
 
+function getListOfAvailablePresets()
+{
+    return JSON.parse(localStorage.getItem("qat-list"));
+}
 function storePreset(presetName, parameters)
 {
-    const list = JSON.parse(localStorage.getItem("qat-list"));
+    list = JSON.parse(localStorage.getItem("qat-list"));
     if(list != null)
     {
         if(list.includes(presetName))
@@ -435,6 +516,3 @@ function addPresetToHTML(presetName)
     optElement.innerHTML = presetName;
     document.getElementById("inputPreset").appendChild(optElement)
 }
-
-
-

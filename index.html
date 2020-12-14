@@ -48,11 +48,11 @@ canvas {
               <div class="row">
                   <div class="col-sm-12">
                         <legend>Generator settings</legend>
-                        <label for="minIters">Minimum iterations:</label>
-                        <input type="text" id="minIters" onchange="input_updateGeneratorRules();">
+                        <label for="minIters">Min. iterations:</label>
+                        <input type="text" value="1" id="minIters" onchange="input_updateGeneratorRules();">
 
-                        <label for="maxIters">Minimum iterations:</label>
-                        <input type="text" id="maxIters" onchange="input_updateGeneratorRules();">
+                        <label for="maxIters">Max. iterations:</label>
+                        <input type="text" value="5" id="maxIters" onchange="input_updateGeneratorRules();">
 
                         <label for="maxIters">Randomizer oscillations:</label>
                         <input type="text" id="oscillation" onchange="input_updateGeneratorRules();">
@@ -102,15 +102,18 @@ canvas {
                       </fieldset>
           <fieldset>
             <legend>Presets</legend>
-            <select name="presets" id="inputPreset"
+            <select name="presets" id="inputPreset" placeholder="Saved preset"
                                       onchange="input_setPreset()">
                 <!--<option value="scorpion">Scorpion</option>-->
                 <!--<option value="lol">lol</option>-->
             </select>
-            <input type="text" id="inputPresetName" placeholder="New preset"/>
+            <input type="text" id="inputPresetName" placeholder="New preset name"/>
             <button class="primary" type="button" onclick="input_savePreset();">Add!</button>
-            <button class="primary" type="button" onclick="input_exportPresets();">Export!</button>
-            <button class="primary" type="button" onclick="input_importPresets();">Import!</button>
+            <button class="primary" type="button" onclick="input_exportPresets();">Export all
+                presets</button>
+            <br>
+            <label for="importFile">Import presets from text file:</label>
+            <input type="file" id="importFile" oninput="input_importPresets();" text="Import!">
           </fieldset>
 
           <fieldset>
