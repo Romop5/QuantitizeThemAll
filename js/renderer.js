@@ -424,6 +424,11 @@ function input_updateGeneratorRules()
         unaryFunc.push("inv");
     }
 
+    if(isFormElementChecked("allow_pow"))
+    {
+        binaryFunc.push("pow");
+    }
+
     if(isFormElementChecked("allow_sin"))
     {
         unaryFunc.push("sin");
