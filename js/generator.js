@@ -1,14 +1,16 @@
-function generateExpressionFromGrammar(rules, minIters, maxIters, oscillation)
+function generateExpressionFromGrammar(rules, minIters, maxIters, oscillation, startingExpression)
 {
+    if(startingExpression == undefined)
+        startingExpression = [ "E" ]
     // Clamp miniters to maxiters at most
     minIters = (minIters > maxIters)?maxIters:minIters;
     var i = 0;
-    var current = [ "E" ];
+    var current = startingExpression;
     var maxAttempts = 200;
     // while generation terminates before mininum iterations
     while(i < minIters && maxAttempts > 0)
     {
-        current = [ "E" ];
+        var current = startingExpression
         var shouldTerminate = false;
         // try new generation
         for(i = 0; i < maxIters && !shouldTerminate; i++)

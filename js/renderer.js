@@ -530,6 +530,60 @@ function input_mutateFunction()
     quantitize()
 
 }
+
+function choose(alt1, alt2, probability)
+{
+    if(Math.random() > probability)
+        return alt1;
+    return alt2;
+}
+
+function input_mutateStructure()
+{
+    pushCurrentParameters();
+    const program = g_quantitizeParameters.program;
+    const regexp = /[a-zA-Z]*\([^()]*\)/g;
+    const regexpTerminals = /[xy]/g;
+    const regexpTerminalNumbers = /[0-9]+(.[0-9]*)/g;
+    const regexpExpr= /E.E/g;
+
+    var probability = 0.3;
+
+    var result = program
+    // Replace ( E ) with E
+    var result = result.replace(regexp, function(match, token) {
+        return choose(match,"E", 0.5); 
+    });
+    console.log(result)
+
+    // Replace x or y with E
+    var result = result.replace(regexpTerminals, function(match, token) {
+        return choose(match,"E", probability); 
+    });
+
+    // Replace numbers with E
+    var result = result.replace(regexpTerminalNumbers, function(match, token) {
+        return choose(match,"E", probability); 
+    });
+
+    // Replace relations E.E with E
+    var result = result.replace(regexpExpr, function(match, token) {
+        return choose(match,"E", 0.9); 
+    });
+
+    result = result.split(/(E)/);
+
+
+    var grammar = createGrammarFromConfig(g_generatorSettings);
+    g_quantitizeParameters.program = generateExpressionFromGrammar(grammar,
+        1,
+        2,
+        g_generatorSettings.oscillations,
+        result
+    );
+    quantitize()
+}
+
 function input_generateFunction()
 {
     pushCurrentParameters();
