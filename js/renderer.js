@@ -156,10 +156,10 @@ function setProgramInputToText(text)
 }
 
 var g_quantitizeParameters = {
-    program: "x+x",
+    program: "x*0.27*sin(0.06)*mod(x,0.41)*mod(x+x,0.13)+mod(x*x+y,0.29)+0.17+sin(y+0.32+sin(sin(sin(x))))+sin(mod(mod(sin(mod(x,0.16)),0.20)*sin(0.39),0.42))*sin(mod(mod(mod(y,0.49),0.10)*mod(mod(sin(mod(x,0.15)),0.01),0.28),0.37))",
     transformationType: "linear",
-    startColor: "#FF5800",
-    endColor: "#FD3300",
+    startColor: "#000000",
+    endColor: "#FF3300",
     zoom: 1.0,
     focal: 1.0,
     hasColorThreshold: false,
