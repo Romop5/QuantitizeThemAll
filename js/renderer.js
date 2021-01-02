@@ -165,7 +165,8 @@ var g_quantitizeParameters = {
     transformationType: "linear",
     startColor: "#FF5800",
     endColor: "#FD3300",
-    zoom: 1.0
+    zoom: 1.0,
+    focal: 1.0
 }
 var g_quantitizeParametersStack = [g_quantitizeParameters]
 function quantitize()

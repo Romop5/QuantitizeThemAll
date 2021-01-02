@@ -31,7 +31,21 @@ canvas {
         </div>
     </div>
     <div class="col-sm-6">
-        <h1>QuantitizeThemAll</h1>
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-6">
+                <h1>QuantitizeThemAll <img src="docs/logo.png" width="64px"></h1>
+            </div>
+            <div class="col-sm-6" style="text-align: right;">
+                <a href="docs/about.html"><button class="small"><span class="icon-help big"></span>
+                        Help </button></a>
+                <a href="https://github.com/Romop5/QuantitizeThemAll"><button class="small"><img src="docs/github.png" width="12px">
+                        GitHub</button></a>
+                
+            </div>
+          </div>
+        </div>
+        
         <form>
           <fieldset>
             <legend>Function</legend>
@@ -56,7 +70,7 @@ canvas {
                         <label for="maxIters">Max. iterations:</label>
                         <input type="number" size="3" value="1" min="1" max="20" id="maxIters" onchange="input_updateGeneratorRules();">
 
-                        <label for="maxIters">Randomizer oscillations:</label>
+                        <label for="oscillation">Randomizer oscillations:</label>
                         <input type="number" size="5" value="1" min="1" max="10000" id="oscillation" onchange="input_updateGeneratorRules();">
 
                         <br>
@@ -139,11 +153,11 @@ canvas {
           <fieldset>
             <legend>Output image settings</legend>
             <label for="outputWidth">Width</label>
-            <input type="text" id="outputWidth" value="2048"/>
+            <input type="number" id="outputWidth" value="2048" size=10/>
             <label for="outputHeight">Height</label>
-            <input type="text" id="outputHeight" value="2048"/>
+            <input type="number" id="outputHeight" value="2048"/ size=10>
+          <button class="primary" type="button" onclick="saveAsImage();">Save as PNG!</button>
           </fieldset>
-          <button class="primary" type="button" onclick="saveAsImage();">Save as JPG!</button>
         </form>
 
     </div>
