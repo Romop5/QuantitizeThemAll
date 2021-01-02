@@ -124,11 +124,21 @@ canvas {
                   </div>
               </div>
               <div class="row">
-                  <div class="col-sm-12">
+                  <div class="col-sm-4">
                     <legend>Coloring</legend>
                     <input type="color" id="startColor" value="#ff0000" oninput="input_updateColor()" />
                     <button class="primary small" type="button" onclick="input_invertColor();"><=></button>
                     <input type="color" id="endColor" value="#00ff00" oninput="input_updateColor()"/>
+
+                  </div>
+                  <div class="col-sm-8">
+                    <legend>Thresholding</legend>
+                    <label for="enable_threshold">Enable thresholding</label>
+                    <input type="checkbox" id="enable_threshold"
+                    onchange="input_updateColor();">
+                    <label for="inputThreshold">Threshold position</label>
+                    <input type="range" step="0.01" min="0" max="1.0" value="0.5" class="slider"
+                     id="inputThreshold" oninput="input_updateColor()">
                   </div>
               </div>
             </div>

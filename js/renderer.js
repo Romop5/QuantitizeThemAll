@@ -166,7 +166,9 @@ var g_quantitizeParameters = {
     startColor: "#FF5800",
     endColor: "#FD3300",
     zoom: 1.0,
-    focal: 1.0
+    focal: 1.0,
+    hasColorThreshold: false,
+    colorThreshold: 0.5
 }
 var g_quantitizeParametersStack = [g_quantitizeParameters]
 function quantitize()
@@ -224,6 +226,12 @@ function quantitize()
        vec3 colorStart = vec3(START_COLOR)/255.0;
        vec3 colorEnd = vec3(END_COLOR)/255.0;
        vec3 resultColor = mix(colorStart, colorEnd, parameter);
+
+       bool hasColorThreshold = THRESHOLD;
+       if(hasColorThreshold)
+       {
+          resultColor = (parameter > THRESHVALUE)?colorStart:colorEnd;  
+       }
        gl_FragColor = vec4(resultColor, 1.0);
    }
    `
@@ -240,6 +248,8 @@ function quantitize()
         .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
         .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
         .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
+        .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     //console.log("New FS:"+newFragmentShader);
@@ -259,8 +269,13 @@ function updateHTMLFromParams()
 {
     document.getElementById("inputProgram").value = g_quantitizeParameters.program; 
     document.getElementById("inputTransformation").value = g_quantitizeParameters.transformationType; 
+    document.getElementById("inputZoom").value = g_quantitizeParameters.zoom; 
+    document.getElementById("inputFocal").value = g_quantitizeParameters.focal; 
+
     document.getElementById("startColor").value = g_quantitizeParameters.startColor; 
     document.getElementById("endColor").value = g_quantitizeParameters.endColor; 
+    document.getElementById("enable_threshold").checked = g_quantitizeParameters.hasColorThreshold; 
+    document.getElementById("inputThreshold").value = g_quantitizeParameters.colorThreshold; 
 
     document.getElementById("maxIters").value = g_generatorSettings.maxIters;
     document.getElementById("minIters").value = g_generatorSettings.minIters;
@@ -380,8 +395,13 @@ function input_updateColor()
     console.log("updateColor()");
     var start = document.getElementById("startColor").value; 
     var end = document.getElementById("endColor").value; 
+    var enabler = document.getElementById("enable_threshold").checked; 
+    var thresholdSlider= document.getElementById("inputThreshold"); 
     g_quantitizeParameters.startColor= start;
     g_quantitizeParameters.endColor= end;
+    g_quantitizeParameters.hasColorThreshold= enabler;
+    g_quantitizeParameters.colorThreshold= thresholdSlider.value;
+    thresholdSlider.disabled = !enabler;
     input_updateProgram();
 }
 
