@@ -24,6 +24,22 @@ canvas {
     height: 100%;
 }
 </style>
+
+<div class="container hidden-lg">
+  <div class="row">
+    <div class="col-sm-12 col-md-6">
+        <h1>QuantitizeThemAll <img src="docs/logo.png" width="64px"></h1>
+    </div>
+    <div class="col-sm-12 col-md-6" style="text-align: right;">
+        <a href="docs/about.html"><button class="small"><span class="icon-help big"></span>
+                Help </button></a>
+        <a href="https://github.com/Romop5/QuantitizeThemAll"><button class="small"><img src="docs/github.png" width="12px">
+                GitHub</button></a>
+        
+    </div>
+  </div>
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-6" id='canvas-parent'>
@@ -31,7 +47,7 @@ canvas {
         </div>
     </div>
     <div class="col-sm-12 col-md-12 col-lg-6">
-        <div class="container">
+        <div class="container hidden-md hidden-sm">
           <div class="row">
             <div class="col-sm-12 col-md-6">
                 <h1>QuantitizeThemAll <img src="docs/logo.png" width="64px"></h1>
@@ -54,7 +70,7 @@ canvas {
                 <div class="col-sm-12">
 
                     <input style="width: 100%;" type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
-                    <button class="secondary" type="button" onclick="input_generateFunction();">Generate!</button>
+                    <button class="primary" type="button" onclick="input_generateFunction();">Generate!</button>
                     <button class="secondary" type="button"
                         onclick="input_mutateFunction();">Mutate!</button>
                     <button class="secondary" type="button"
