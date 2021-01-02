@@ -54,7 +54,9 @@ function init() {
     initializeDefaultPresets();
     window.addEventListener('resize', onWindowResize, false);
 
-    updateHTMLFromParams()
+
+    updateConfigFromURL();
+    updateHTMLFromParams();
 }
 
 function getCanvasSize()
@@ -76,13 +78,6 @@ function onWindowResize() {
 }
 
 function animate() {
-
-    //requestAnimationFrame(animate);
-
-    //mesh.rotation.x += 0.005;
-    //mesh.rotation.y += 0.01;
-
-    //document.write("Render");
     renderer.render(scene, camera);
 }
 
@@ -107,7 +102,7 @@ function saveAsImage() {
         var strMime = "image/png";
         imgData = offscreenRenderer.domElement.toDataURL(strMime,1.0);
 
-        saveFile(imgData.replace(strMime, strDownloadMime), "test.png");
+        saveFile(imgData.replace(strMime, strDownloadMime), "qtaRender.png");
 
     } catch (e) {
         console.log(e);
@@ -265,6 +260,16 @@ function quantitize()
 
 }
 
+function updateConfigFromURL()
+{
+    if(window.location.search.includes("?data="))
+    {
+        const data = window.location.search.replace("?data=", "");
+        const urlSettings = JSON.parse(window.atob(data));
+        g_quantitizeParameters = urlSettings;
+        quantitize();
+    }
+}
 function updateHTMLFromParams()
 {
     document.getElementById("inputProgram").value = g_quantitizeParameters.program; 
@@ -529,6 +534,21 @@ function input_revertGenerateFunction()
 {
     popCurrentParameters();
     quantitize();
+}
+
+function input_shareURL()
+{
+    let element = document.createElement("input")
+    const search = "?data="+window.btoa(JSON.stringify(g_quantitizeParameters));
+    const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + search;
+    element.value = newURL;
+    document.body.appendChild(element)
+
+    element.select();
+    element.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Saved to clip board");
+    element.remove();
 }
 
 function cleanPresetList()
