@@ -92,6 +92,11 @@ amount of expansions.
 The generator allows to parametrize allowed expression functions using check boxes.
 In addition, the support of random constants can be changed by **lowering or increasing oscillation
 range**.
+
+<div align="center">
+    <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/b0fef1ad976ef018a50206628c11a116b8db80f7/docs/generateAndMutate.svg" alt="screen description" /></a>
+</div>
+
 ### Mutating functions
 By clicking on mutate button, **all constants in function expression are randomly changed**, leading to
 a variation of already shown image.
