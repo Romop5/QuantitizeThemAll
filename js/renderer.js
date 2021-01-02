@@ -265,7 +265,7 @@ function updateConfigFromURL()
     if(window.location.search.includes("?data="))
     {
         const data = window.location.search.replace("?data=", "");
-        const urlSettings = Base64DecodeUrl(JSON.parse(window.atob(data)));
+        const urlSettings = JSON.parse(window.atob(Base64DecodeUrl(data)));
         g_quantitizeParameters = urlSettings;
         quantitize();
     }
