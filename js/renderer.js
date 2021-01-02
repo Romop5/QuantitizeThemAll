@@ -69,10 +69,13 @@ function getCanvasSize()
 function onWindowResize() {
 
     camera.aspect = window.innerWidth / window.innerHeight;
+    if(camera.aspect < 1.0)
+        camera.aspect = 1.0;
     camera.updateProjectionMatrix();
 
     var screenSize = getCanvasSize();
-    renderer.setSize(screenSize.width, screenSize.height);
+    const height = (screenSize.width < screenSize.height)?screenSize.width:screenSize.height;
+    renderer.setSize(screenSize.width, height);
     renderer.render(scene, camera);
 
 }

@@ -26,11 +26,11 @@ canvas {
 </style>
 <div class="container">
   <div class="row">
-    <div class="col-sm-12 col-md-6" id='canvas-parent'>
+    <div class="col-sm-12 col-md-12 col-lg-6" id='canvas-parent'>
         <div id='canv'>
         </div>
     </div>
-    <div class="col-sm-12 col-md-6">
+    <div class="col-sm-12 col-md-12 col-lg-6">
         <div class="container">
           <div class="row">
             <div class="col-sm-12 col-md-6">
@@ -54,7 +54,6 @@ canvas {
                 <div class="col-sm-12">
 
                     <input style="width: 100%;" type="text" id="inputProgram" value="x*x+y*y" oninput="input_updateProgram();"/>
-                    <button type="button" id="rerender" onclick="input_updateProgram();">Rerender</button>
                     <button class="secondary" type="button" onclick="input_generateFunction();">Generate!</button>
                     <button class="secondary" type="button"
                         onclick="input_mutateFunction();">Mutate!</button>
