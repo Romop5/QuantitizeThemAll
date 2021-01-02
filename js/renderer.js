@@ -165,6 +165,7 @@ var g_quantitizeParameters = {
     transformationType: "linear",
     startColor: "#FF5800",
     endColor: "#FD3300",
+    zoom: 1.0
 }
 var g_quantitizeParametersStack = [g_quantitizeParameters]
 function quantitize()
@@ -186,11 +187,26 @@ function quantitize()
    {
         return vec2(atan(uv.x,uv.y),sqrt(uv.x*uv.x+ uv.y*uv.y));  
    }
+   vec2 spherical(vec2 uv)
+   {
+        vec2 direction = uv;
+        float len = length(uv);
+        return vec2(exp(len))*direction;
+   }
+   vec2 fisheye(vec2 uv)
+   {
+        float f = FOCAL;
+        // Calculate angle from plane's UV
+        vec2 angles = atan(uv, vec2(1.0));
+        //return angles*f;
+        return vec2(2.0)*sin(angles*vec2(0.5))*vec2(f);
+   }
 
    float inv(float x)
    {
     return 1.0/x;
    }
+
 
    in vec2 uvPos;
 
@@ -198,7 +214,7 @@ function quantitize()
        vec2 screenSize = vec2(SCREEN_SIZE);
        float uv_x = uvPos.x;
        float uv_y = uvPos.y;
-       vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y));
+       vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y)*vec2(ZOOM));
        float x = resultingUv.x;
        float y = resultingUv.y;
        float program = PROGRAM;
@@ -221,6 +237,8 @@ function quantitize()
         .replace("PROGRAM", program)
         .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
         .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
+        .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     //console.log("New FS:"+newFragmentShader);
@@ -257,6 +275,8 @@ function input_setPreset()
     var db = localStorage.getItem(programName);
     params = JSON.parse(db);
 
+    // Pre-fill important parameters (such as zoom), which may not be part of stored preset
+    g_quantitizeParameters["zoom"] = 1.0; 
     for (var key in params) {
         if (params.hasOwnProperty(key)) {
             g_quantitizeParameters[key] = params[key];
@@ -346,7 +366,11 @@ function input_updateTransformation()
 {
     console.log("updateTransform()");
     var type = document.getElementById("inputTransformation").value; 
+    var zoom= document.getElementById("inputZoom").value; 
+    var focal = document.getElementById("inputFocal").value; 
     g_quantitizeParameters.transformationType = type;
+    g_quantitizeParameters.zoom = zoom;
+    g_quantitizeParameters.focal = focal;
     input_updateProgram();
 }
 
