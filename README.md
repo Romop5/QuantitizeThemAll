@@ -1,4 +1,9 @@
+<div align="center">
+    <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/logo.png" alt="app overview" height="100px"/></a>
+</div
+
 # QuantitizeThemAll
+
 QTA - A free-to-use offline web-based wanna-be function quantitizer for procedural generation artist.
 
 *This application was produced while passing subject [Computer art@FIT VUT](https://www.fit.vut.cz/study/course/VIN/.en) and certain elements of application were
@@ -8,6 +13,7 @@ designed by the authors of previous implementations of similar tools.*
 <div align="center">
     <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/app.png?token=AAZFMBIQJFMCQBRFGFJ67C277GPDQ" alt="app overview" /></a>
 </div>
+
 ## Features
 - multiple presets to demonstrate interesting functions and parameters
 - easy-to-use function generator with built-in mutator
