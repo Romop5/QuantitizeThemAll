@@ -265,11 +265,12 @@ function updateConfigFromURL()
     if(window.location.search.includes("?data="))
     {
         const data = window.location.search.replace("?data=", "");
-        const urlSettings = JSON.parse(window.atob(data));
+        const urlSettings = Base64DecodeUrl(JSON.parse(window.atob(data)));
         g_quantitizeParameters = urlSettings;
         quantitize();
     }
 }
+
 function updateHTMLFromParams()
 {
     document.getElementById("inputProgram").value = g_quantitizeParameters.program; 
@@ -536,10 +537,21 @@ function input_revertGenerateFunction()
     quantitize();
 }
 
+// Taken from https://jsfiddle.net/magikMaker/7bjaT/
+function Base64EncodeUrl(str){
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+}
+
+// Taken from https://jsfiddle.net/magikMaker/7bjaT/
+function Base64DecodeUrl(str){
+    str = (str + '===').slice(0, str.length + (str.length % 4));
+    return str.replace(/-/g, '+').replace(/_/g, '/');
+}
+
 function input_shareURL()
 {
     let element = document.createElement("input")
-    const search = "?data="+window.btoa(JSON.stringify(g_quantitizeParameters));
+    const search = "?data="+Base64EncodeUrl(window.btoa(JSON.stringify(g_quantitizeParameters)));
     const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + search;
     element.value = newURL;
     document.body.appendChild(element)
