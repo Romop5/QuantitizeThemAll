@@ -58,7 +58,9 @@ canvas {
                     <button class="secondary" type="button" onclick="input_generateFunction();">Generate!</button>
                     <button class="secondary" type="button"
                         onclick="input_mutateFunction();">Mutate!</button>
-                    <button class="secondary" type="button" onclick="input_revertGenerateFunction();">Back!</button>
+                    <button class="secondary" type="button"
+                        onclick="input_historyStep(true);">Forward!</button>
+                    <button class="secondary" type="button" onclick="input_historyStep(false);">Back!</button>
                     <button class="" type="button" onclick="input_shareURL();"><span class="icon-link"></span> Share URL!</button>
                 </div>
              </div>

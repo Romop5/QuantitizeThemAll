@@ -166,6 +166,7 @@ var g_quantitizeParameters = {
     colorThreshold: 0.5
 }
 var g_quantitizeParametersStack = [g_quantitizeParameters]
+var g_quantitizeParametersStackPointer  = 0
 function quantitize()
 {
    setProgramInputToText(g_quantitizeParameters.program);
@@ -386,6 +387,7 @@ function input_updateProgram()
 
 function input_updateTransformation()
 {
+    pushCurrentParameters();
     console.log("updateTransform()");
     var type = document.getElementById("inputTransformation").value; 
     var zoom= document.getElementById("inputZoom").value; 
@@ -398,6 +400,7 @@ function input_updateTransformation()
 
 function input_updateColor()
 {
+    pushCurrentParameters();
     console.log("updateColor()");
     var start = document.getElementById("startColor").value; 
     var end = document.getElementById("endColor").value; 
@@ -413,6 +416,7 @@ function input_updateColor()
 
 function input_invertColor()
 {
+    pushCurrentParameters();
     console.log("invertColor()");
     var start = document.getElementById("startColor").value;
     var end = document.getElementById("endColor").value;
@@ -423,19 +427,25 @@ function input_invertColor()
 
 function pushCurrentParameters()
 {
-    g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
+    if(g_quantitizeParameters[g_quantitizeParameters.length-1] != g_quantitizeParameters)
+    {
+        g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
+        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length - 1;
+    }
 }
 
-function popCurrentParameters()
+function parametersHistoryStep(isForward)
 {
-    console.log(g_quantitizeParametersStack)
-    if(g_quantitizeParametersStack.length > 1)
-    {
-        g_quantitizeParameters = g_quantitizeParametersStack.pop()
-    } else {
-        g_quantitizeParameters = g_quantitizeParametersStack[0];
-    }
-    console.log(g_quantitizeParameters)
+    console.log(g_quantitizeParametersStackPointer)
+
+    const len = g_quantitizeParametersStack.length;
+    console.log("len" + len)
+    g_quantitizeParametersStackPointer = parseInt(g_quantitizeParametersStackPointer)+(isForward?1:-1);
+    g_quantitizeParametersStackPointer = Math.max(Math.min(g_quantitizeParametersStackPointer, len-1), 0);
+
+    g_quantitizeParameters = g_quantitizeParametersStack[g_quantitizeParametersStackPointer];
+    //console.log(g_quantitizeParameters)
+    console.log(g_quantitizeParametersStackPointer)
     updateHTMLFromParams();
 }
 
@@ -531,21 +541,24 @@ function input_generateFunction()
     //g_quantitizeParameters.program = generateExpression(6);
     quantitize();
 }
-function input_revertGenerateFunction()
+function input_historyStep(isForward)
 {
-    popCurrentParameters();
+    parametersHistoryStep(isForward);
     quantitize();
 }
 
-// Taken from https://jsfiddle.net/magikMaker/7bjaT/
-function Base64EncodeUrl(str){
-    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
+function Base64DecodeUrl(str) {
+  return (str + '==='.slice((str.length + 3) % 4))
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
 }
 
-// Taken from https://jsfiddle.net/magikMaker/7bjaT/
-function Base64DecodeUrl(str){
-    str = (str + '===').slice(0, str.length + (str.length % 4));
-    return str.replace(/-/g, '+').replace(/_/g, '/');
+// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
+function Base64EncodeUrl(str) {
+  return str.replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '')
 }
 
 function input_shareURL()
