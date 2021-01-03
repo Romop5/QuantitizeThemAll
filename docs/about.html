@@ -19,121 +19,158 @@
   </div>
   <div class="row">
     <div class="col-sm-12" >
-            <h1>QuantitizeThemAll</h1>
 
-            <p>QTA - A free-to-use offline web-based wanna-be function quantitizer for procedural generation artist.</p>
-
-            <p><em>This application was produced while passing subject <a href="https://www.fit.vut.cz/study/course/VIN/.en">Computer art@FIT VUT</a> and certain elements of application were
-            designed by the authors of previous implementations of similar tools.</em></p>
-
-            <p><strong>Online demo:</strong> https://romop5.github.io/QuantitizeThemAll/index.html</p>
-
-            <div align="center">
-                <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/app.png?token=AAZFMBIQJFMCQBRFGFJ67C277GPDQ" alt="app overview" /></a>
-            </div>
+<div align="center">
+    <a href="logo.png" alt="app overview" height="100px"/></a>
+<br>
+<i>A free-to-use offline web-based wanna-be function quantitizer for procedural generation artist.</i>
+</div>
 
 
-            <h2>Features</h2>
-
-            <ul>
-            <li>multiple presets to demonstrate interesting functions and parameters</li>
-            <li>easy-to-use function generator with built-in mutator</li>
-            <li>offline, GPU-based computation (thanks to Three.js &amp; WebGL)</li>
-            <li>intersession preset storage &amp; exporting</li>
-            </ul>
+<hr>
 
 
-            <h2>About</h2>
+<p><strong>Disclaimer</strong>: <em>This application was produced while passing subject <a href="https://www.fit.vut.cz/study/course/VIN/.en">Computer art@FIT VUT</a> and certain elements of application were
+designed by the authors of previous implementations of similar tools.</em></p>
 
-            <p>This is a simple playground tool to help artist with findind interesting <strong>composite functions</strong>, that
-            produce interesting output pictures. Tool provides simple <strong>L-system grammar</strong> for randomly generating function expressions.
-            In addition, each expression can be <strong>mutated</strong> to produce a variation of currently previewed image.
-            Many image patterns and variations are already available using <strong>presets</strong>.</p>
+<p><strong>Online demo:</strong> https://romop5.github.io/QuantitizeThemAll/index.html</p>
 
-            <p><strong>Function quantitization</strong> is a technique in which output color of each pixel is determined by
-            evaluating given function and taking the pixel&rsquo;s position in UV coordinates as input to such
-            function.</p>
-
-            <p>In such case, the screen&rsquo;s center has <strong>UV coordinates</strong> (0,0), top-left corner has (-1,1),
-            top-right (1,1), bottom-right (1,-1), a bottom-left (-1,-1). The output pixel of center of screen
-            will thus depends on function value at (0,0).</p>
-
-            <div align="center">
-                <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/6dfdaf947239fc2e3e68b66bbae813c27df54deb/docs/screen.svg?token=AAZFMBIFJ7OCWQQYM3657TC76BR7K" alt="screen description" /></a>
-            </div>
+<div align="center">
+    <a href="app.png" alt="app overview" /></a>
+</div>
 
 
-            <p>Moreover, after evaluating the function value, a certain mapping has to be applied to convert in
-            theory whole range of real values, produced by function, to a color.</p>
+<h2>Gallery</h2>
 
-            <p>A common approach is to expect <strong>normalized output of the function</strong> between 0 and 1 and then simply
-            <strong>linearly interpolate</strong> between two colours.</p>
+<p>All of these patterns can be achieved in a few clicks on generate &amp; mutate buttons and a few
+experiments with generator parameters.</p>
 
-            <h2>Usage</h2>
+<p align="center">
+<a href="gallery-a.png"><img style="float:left"  src="gallery-a-thumb.jpg" width="180px"></a>
+<a href="gallery-b.png"><img style="float:left"  src="gallery-b-thumb.jpg" width="180px"></a>
+<a href="gallery-c.png"><img style="float:left"  src="gallery-c-thumb.jpg" width="180px"></a>
+<a href="gallery-d.png"><img style="float:left"  src="gallery-d-thumb.jpg" width="180px"></a>
+</p>
 
-            <p>The application is split into two main parts - <strong>preview</strong> (left) and <strong>input parameters</strong> (right).
-            The preview image shows an evaluation of the currently written function within context of parameters.</p>
 
-            <p>Parameters consist of function expression, parameters for generating a new function, and pre-made
-            presets.</p>
+<p align="center">
+<a href="gallery-e.png"><img style="float:left"  src="gallery-e-thumb.jpg" width="180px"></a>
+<a href="gallery-f.png"><img style="float:left"  src="gallery-f-thumb.jpg" width="180px"></a>
+<a href="gallery-g.png"><img style="float:left"  src="gallery-g-thumb.jpg" width="180px"></a>
+<a href="gallery-h.png"><img style="float:left"  src="gallery-h-thumb.jpg" width="180px"></a>
+</p>
 
-            <h3>Evaluating a function</h3>
 
-            <p>The function is evaluated whenever the function definition (e.g. sin(x)) is changed in form, or if
-            coloring or trasformation parameters change.</p>
+<div style="clear:both"></div>
 
-            <h4>Function definition</h4>
 
-            <p>The program provides you with <strong>x</strong> and <strong>y</strong> inputs, which serve as normalized UV coordinates (see
-            image above).</p>
+<h2>Features</h2>
 
-            <p>Any valid GLSL built-in function can be used such as <strong>sin, cos, tan, atan, pow, exp, sqrt</strong> and
-            more - see <a href="https://www.shaderific.com/glsl-functions">GLSL Functions</a>.</p>
+<ul>
+<li><strong>interactive</strong> prototyping</li>
+<li>multiple <strong>presets</strong> to demonstrate interesting functions and parameters</li>
+<li>easy-to-use <strong>function generator</strong> with built-in <strong>mutator</strong></li>
+<li>offline, <strong>GPU-based computation</strong> (thanks to Three.js &amp; WebGL)</li>
+<li>intersession preset storage &amp; exporting</li>
+</ul>
 
-            <h4>Choice of transformation</h4>
 
-            <p>Transformations transforms input UV coordinates. By default, <strong>identity</strong> transformation pass (x,y)
-            as it is.
-            <strong>Polar transformation</strong> computes <em>angle-distance</em> representation of complex number, specified by
-            (x,y).
-            <strong>Circle inversion</strong> transforms each coordinate by inverting it (e.g. newX = 1.0/x). Such
-            transformation keeps points at unit circle at their original place (identity) and turns lines into
-            circles.
-            <strong>Spherical transformation</strong> use exponential function to reparametrize planar UV coordinates.
-            <strong>Fish eye transformation</strong> use spherical mapping.</p>
+<h2>About</h2>
 
-            <p>While using any of transformations above, <strong>zoom</strong> can be manipulated, which basically multiplies
-            input UV before transforming them.</p>
+<p>This is a simple playground tool to help artist with findind interesting <strong>composite functions</strong>, that
+produce interesting output pictures. Tool provides simple <strong>L-system grammar</strong> for randomly generating function expressions.
+In addition, each expression can be <strong>mutated</strong> to produce a variation of currently previewed image.
+Many image patterns and variations are already available using <strong>presets</strong>.</p>
 
-            <p>In addition, several of transformations support chaning <strong>focal length</strong>.</p>
+<p><strong>Function quantitization</strong> is a technique in which output color of each pixel is determined by
+evaluating given function and taking the pixel&rsquo;s position in UV coordinates as input to such
+function.</p>
 
-            <h3>Generating functions</h3>
+<p>In such case, the screen&rsquo;s center has <strong>UV coordinates</strong> (0,0), top-left corner has (-1,1),
+top-right (1,1), bottom-right (1,-1), a bottom-left (-1,-1). The output pixel of center of screen
+will thus depends on function value at (0,0).</p>
 
-            <p>This application provides a simple generator of function expressions.
-            <strong>An expression is made either from binary or unary expressions</strong> such as A*B or A+B etc.
-            Unary expressions are either unary functions (such as sin(expr) or cos(expr)), input parameters (x
-            or y), or a random constant.</p>
+<div align="center">
+    <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="screen.svg" alt="screen description" /></a>
+</div>
 
-            <p>The generator thus starts with initial expression E, which is <strong>sucessively and parallely expanded</strong>
-            into expression tree. The number of levels of these expansions is controlled by mininal and maximal
-            amount of expansions.</p>
 
-            <p>The generator allows to parametrize allowed expression functions using check boxes.
-            In addition, the support of random constants can be changed by <strong>lowering or increasing oscillation
-            range</strong>.</p>
+<p>Moreover, after evaluating the function value, a certain mapping has to be applied to convert in
+theory whole range of real values, produced by function, to a color.</p>
 
-            <h3>Mutating functions</h3>
+<p>A common approach is to expect <strong>normalized output of the function</strong> between 0 and 1 and then simply
+<strong>linearly interpolate</strong> between two colours.</p>
 
-            <p>By clicking on mutate button, <strong>all constants in function expression are randomly changed</strong>, leading to
-            a variation of already shown image.</p>
+<h2>Usage</h2>
 
-            <p>This allows user to quickly iterate through various variations of parameters without changing the
-            structure of expression.</p>
+<p>The application is split into two main parts - <strong>preview</strong> (left) and <strong>input parameters</strong> (right).
+The preview image shows an evaluation of the currently written function within context of parameters.</p>
 
-            <h2>Technical notes</h2>
+<p>Parameters consist of function expression, parameters for generating a new function, and pre-made
+presets.</p>
 
-            <p>The application written in <em>Javascript</em>, based on <strong>Three.js</strong> (rendering) and <strong>mini.css</strong> (UI).
-            No cookies are used. Presets are stored using <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web storage API</a>.</p>
+<h3>Evaluating a function</h3>
+
+<p>The function is evaluated whenever the function definition (e.g. sin(x)) is changed in form, or if
+coloring or trasformation parameters change.</p>
+
+<h4>Function definition</h4>
+
+<p>The program provides you with <strong>x</strong> and <strong>y</strong> inputs, which serve as normalized UV coordinates (see
+image above).</p>
+
+<p>Any valid GLSL built-in function can be used such as <strong>sin, cos, tan, atan, pow, exp, sqrt</strong> and
+more - see <a href="https://www.shaderific.com/glsl-functions">GLSL Functions</a>.</p>
+
+<h4>Choice of transformation</h4>
+
+<p>Transformations transforms input UV coordinates. By default, <strong>identity</strong> transformation pass (x,y)
+as it is.
+<strong>Polar transformation</strong> computes <em>angle-distance</em> representation of complex number, specified by
+(x,y).
+<strong>Circle inversion</strong> transforms each coordinate by inverting it (e.g. newX = 1.0/x). Such
+transformation keeps points at unit circle at their original place (identity) and turns lines into
+circles.
+<strong>Spherical transformation</strong> use exponential function to reparametrize planar UV coordinates.
+<strong>Fish eye transformation</strong> use spherical mapping.</p>
+
+<p>While using any of transformations above, <strong>zoom</strong> can be manipulated, which basically multiplies
+input UV before transforming them.</p>
+
+<p>In addition, several of transformations support chaning <strong>focal length</strong>.</p>
+
+<h3>Generating functions</h3>
+
+<p>This application provides a simple generator of function expressions.
+<strong>An expression is made either from binary or unary expressions</strong> such as A*B or A+B etc.
+Unary expressions are either unary functions (such as sin(expr) or cos(expr)), input parameters (x
+or y), or a random constant.</p>
+
+<p>The generator thus starts with initial expression E, which is <strong>sucessively and parallely expanded</strong>
+into expression tree. The number of levels of these expansions is controlled by mininal and maximal
+amount of expansions.</p>
+
+<p>The generator allows to parametrize allowed expression functions using check boxes.
+In addition, the support of random constants can be changed by <strong>lowering or increasing oscillation
+range</strong>.</p>
+
+<div align="center">
+    <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="generateAndMutate.svg" alt="screen description" /></a>
+</div>
+
+
+<h3>Mutating functions</h3>
+
+<p>By clicking on mutate button, <strong>all constants in function expression are randomly changed</strong>, leading to
+a variation of already shown image.</p>
+
+<p>This allows user to quickly iterate through various variations of parameters without changing the
+structure of expression.</p>
+
+<h2>Technical notes</h2>
+
+<p>The application written in <em>Javascript</em>, based on <strong>Three.js</strong> (rendering) and <strong>mini.css</strong> (UI).
+No cookies are used. Presets are stored using <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web storage API</a>.</p>
 
     </div>
   </div>

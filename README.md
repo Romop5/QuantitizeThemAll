@@ -17,16 +17,16 @@ designed by the authors of previous implementations of similar tools.*
 All of these patterns can be achieved in a few clicks on generate & mutate buttons and a few
 experiments with generator parameters.
 <p align="center">
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-a-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-a-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-b-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-b-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-c-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-c-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-d-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-d-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-a.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-a-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-b.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-b-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-c.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-c-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-d.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-d-thumb.jpg" width="180px"></a>
 </p>
 <p align="center">
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-e-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-e-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-f-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-f-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-g-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-g-thumb.jpg" width="180px"></a>
-<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-h-thumb.jpg"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-h-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-e.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-e-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-f.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-f-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-g.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-g-thumb.jpg" width="180px"></a>
+<a href="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-h.png"><img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-h-thumb.jpg" width="180px"></a>
 </p>
 <div style="clear:both"></div>
 
