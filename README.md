@@ -33,14 +33,9 @@ experiments with generator parameters.
 
 ### Generated ShaderToy animations
 
-[QTA vol.0](https://www.shadertoy.com/view/wt3cRs)
 <div align="center">
-    <a href="https://www.shadertoy.com/view/wt3cRs"><img src="https://www.shadertoy.com/media/shaders/wt3cRs.jpg" alt="qta shader vol.0" /></a>
-</div>
-
-[QTA vol.1](https://www.shadertoy.com/view/tlccRs)
-<div align="center">
-    <a href="https://www.shadertoy.com/view/tlccRs.jpg"><img src="https://www.shadertoy.com/media/shaders/tlccRs.jpg" alt="qta shader vol.0" /></a>
+    <a href="https://www.shadertoy.com/view/wt3cRs"><img src="https://www.shadertoy.com/media/shaders/wt3cRs.jpg" width="350px" alt="qta shader vol.0" /></a>
+    <a href="https://www.shadertoy.com/view/tlccRs"><img src="https://www.shadertoy.com/media/shaders/tlccRs.jpg" width="350px" alt="qta shader vol.0" /></a>
 </div>
 
 ## Features
