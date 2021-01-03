@@ -253,15 +253,21 @@ function quantitize()
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     //console.log("New FS:"+newFragmentShader);
 
-    var geometry = new THREE.PlaneBufferGeometry(2, 2);
-    var material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
+    var hasCompilationError = false;
+    try
+    {
+        var geometry = new THREE.PlaneBufferGeometry(2, 2);
+        var material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
 
-    mesh = new THREE.Mesh(geometry, material);
-    resetScene();
-    scene.add(mesh);
-    renderer.render(scene, camera);
-
-
+        mesh = new THREE.Mesh(geometry, material);
+        resetScene();
+        scene.add(mesh);
+        renderer.render(scene, camera);
+    } catch(err)
+    {
+        hasCompilationError = true; 
+    }
+    document.getElementById("inputProgram").classList.toggle("error-input", hasCompilationError);
 }
 
 function updateConfigFromURL()
@@ -290,6 +296,17 @@ function updateHTMLFromParams()
     document.getElementById("maxIters").value = g_generatorSettings.maxIters;
     document.getElementById("minIters").value = g_generatorSettings.minIters;
     document.getElementById("oscillation").value = g_generatorSettings.oscillations;
+    document.getElementById("allow_constant").checked = g_generatorSettings.constants;
+
+    const binaryFunc = g_generatorSettings.binary;
+    const unaryFunc = g_generatorSettings.unary;
+    document.getElementById("allow_abs").checked = binaryFunc.includes("min"); 
+    document.getElementById("allow_inv").checked = unaryFunc.includes("inv");
+    document.getElementById("allow_minmax").checked = binaryFunc.includes("min");
+    document.getElementById("allow_modulo").checked = binaryFunc.includes("mod");
+    document.getElementById("allow_pow").checked = binaryFunc.includes("pow");
+    document.getElementById("allow_sin").checked = unaryFunc.includes("sin");
+
     document.getElementById("allow_constant").checked = g_generatorSettings.constants;
 }
 
@@ -433,7 +450,7 @@ function pushCurrentParameters()
     if(g_quantitizeParameters[g_quantitizeParameters.length-1] != g_quantitizeParameters)
     {
         g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
-        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length - 1;
+        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length;
     }
 }
 
@@ -468,7 +485,7 @@ function isFormElementChecked(elementID)
 }
 
 
-var g_generatorSettings = {minIters: 1, maxIters: 5, constants: true, oscillations: 30.0}
+var g_generatorSettings = {minIters: 7, maxIters: 12, constants: true, oscillations: 30.0, binary: ["mod"], unary:["sin", "cos" ]}
 function input_updateGeneratorRules()
 {
     var binaryFunc = []
