@@ -13,6 +13,21 @@ designed by the authors of previous implementations of similar tools.*
     <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/app.png?token=AAZFMBIQJFMCQBRFGFJ67C277GPDQ" alt="app overview" /></a>
 </div>
 
+## Gallery
+All of these patterns can be achieved in a few clicks on generate & mutate buttons and a few
+experiments with generator parameters.
+<p align="center">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-a.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-b.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-c.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-d.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-e.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-f.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-g.png" width="120px">
+<img style="float:left"  src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/gallery-h.png" width="120px">
+</p>
+<div style="clear:both"></div>
+
 ## Features
 - **interactive** prototyping 
 - multiple **presets** to demonstrate interesting functions and parameters
