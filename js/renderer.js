@@ -272,13 +272,18 @@ function quantitize()
 
 function updateConfigFromURL()
 {
-    if(window.location.search.includes("?data="))
+    try {
+        if(window.location.search.includes("?data="))
+        {
+            const data = window.location.search.replace("?data=", "");
+            const urlSettings = JSON.parse(window.atob(Base64DecodeUrl(data)));
+            g_quantitizeParameters = urlSettings;
+        }
+    } catch (err)
     {
-        const data = window.location.search.replace("?data=", "");
-        const urlSettings = JSON.parse(window.atob(Base64DecodeUrl(data)));
-        g_quantitizeParameters = urlSettings;
-        quantitize();
+        console.log("Failed to decode data from URL");
     }
+    quantitize();
 }
 
 function updateHTMLFromParams()
