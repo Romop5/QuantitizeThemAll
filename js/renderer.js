@@ -21,6 +21,49 @@ void main() {
 }
 `
 
+var fragmentShaderUtils = `
+/*
+ * Generated while using QuantitizeThemAll
+ * Try it on yourself: https://romop5.github.io/QuantitizeThemAll/
+ */
+   vec2 linear(vec2 uv)
+   {
+        return uv; 
+   }
+
+   vec2 circle(vec2 uv)
+   {
+        vec2 nuv = normalize(uv);
+        float dist = 1.0/length(uv);
+        return nuv*dist;
+   }
+   vec2 polar(vec2 uv)
+   {
+        return vec2(atan(uv.x,uv.y),sqrt(uv.x*uv.x+ uv.y*uv.y));  
+   }
+   vec2 spherical(vec2 uv)
+   {
+        vec2 direction = uv;
+        float len = length(uv);
+        return vec2(exp(len))*direction;
+   }
+   vec2 fisheye(vec2 uv)
+   {
+        float f = FOCAL;
+        // Calculate angle from plane's UV
+        vec2 angles = atan(uv, vec2(1.0));
+        //return angles*f;
+        return vec2(2.0)*sin(angles*vec2(0.5))*vec2(f);
+   }
+
+   float inv(float x)
+   {
+    return 1.0/x;
+   }
+
+
+`
+
 function init() {
 
     console.log("Init()");
@@ -178,42 +221,6 @@ function quantitize()
 {
    setProgramInputToText(g_quantitizeParameters.program);
    var fragmentShaderTemplate=`
-   vec2 linear(vec2 uv)
-   {
-        return uv; 
-   }
-
-   vec2 circle(vec2 uv)
-   {
-        vec2 nuv = normalize(uv);
-        float dist = 1.0/length(uv);
-        return nuv*dist;
-   }
-   vec2 polar(vec2 uv)
-   {
-        return vec2(atan(uv.x,uv.y),sqrt(uv.x*uv.x+ uv.y*uv.y));  
-   }
-   vec2 spherical(vec2 uv)
-   {
-        vec2 direction = uv;
-        float len = length(uv);
-        return vec2(exp(len))*direction;
-   }
-   vec2 fisheye(vec2 uv)
-   {
-        float f = FOCAL;
-        // Calculate angle from plane's UV
-        vec2 angles = atan(uv, vec2(1.0));
-        //return angles*f;
-        return vec2(2.0)*sin(angles*vec2(0.5))*vec2(f);
-   }
-
-   float inv(float x)
-   {
-    return 1.0/x;
-   }
-
-
    in vec2 uvPos;
 
    uniform float time;
@@ -241,6 +248,8 @@ function quantitize()
        gl_FragColor = vec4(resultColor, 1.0);
    }
    `
+
+    fragmentShaderTemplate = fragmentShaderUtils + fragmentShaderTemplate;
 
     var program = g_quantitizeParameters.program;
     // Hack: replace all ints with floats
@@ -359,6 +368,18 @@ function input_savePreset()
     addPresetToHTML(programName)
 }
 
+function util_copyToClipboard(text)
+{
+    let element = document.createElement("textarea")
+    element.value = text; 
+    document.body.appendChild(element)
+
+    element.select();
+    element.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Saved to clip board");
+    element.remove();
+}
 function input_exportPresets()
 {
     console.log("exportPresets()");
@@ -371,17 +392,7 @@ function input_exportPresets()
         var presetSettings = JSON.parse(localStorage.getItem(programName));
         totalSettings[programName] = presetSettings;
     }
-
-
-    let element = document.createElement("input")
-    element.value = JSON.stringify(totalSettings);
-    document.body.appendChild(element)
-
-    element.select();
-    element.setSelectionRange(0, 99999)
-    document.execCommand("copy");
-    alert("Saved to clip board");
-    element.remove();
+    util_copyToClipboard(JSON.stringify(totalSettings));
 }
 
 function input_loadFromPresetFile(file)
@@ -658,17 +669,9 @@ function Base64EncodeUrl(str) {
 
 function input_shareURL()
 {
-    let element = document.createElement("input")
     const search = "?data="+Base64EncodeUrl(window.btoa(JSON.stringify(g_quantitizeParameters)));
     const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + search;
-    element.value = newURL;
-    document.body.appendChild(element)
-
-    element.select();
-    element.setSelectionRange(0, 99999)
-    document.execCommand("copy");
-    alert("Saved to clip board");
-    element.remove();
+    util_copyToClipboard(newURL);
 }
 
 function cleanPresetList()
@@ -780,4 +783,85 @@ function experimental_input_resetTime()
 function experimental_updateSpeed()
 {
     speed = document.getElementById("experimentalSpeed").value;
+}
+
+function experimental_exportShaderToy()
+{
+   var fragmentShaderTemplate=`
+   void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+       vec2 uv = fragCoord/iResolution.xy;
+       uv *= 2.0;
+       uv += -1.0;
+       float t = iTime*SPEED;
+       vec2 resultingUv = TRANSFORMATION(vec2(uv.x, uv.y)*vec2(ZOOM));
+       float x = resultingUv.x;
+       float y = resultingUv.y;
+       float program = PROGRAM;
+       float parameter = clamp(program, 0.0,1.0);
+
+       vec3 colorStart = vec3(START_COLOR)/255.0;
+       vec3 colorEnd = vec3(END_COLOR)/255.0;
+       vec3 resultColor = mix(colorStart, colorEnd, parameter);
+
+       bool hasColorThreshold = THRESHOLD;
+       if(hasColorThreshold)
+       {
+          resultColor = (parameter > THRESHVALUE)?colorStart:colorEnd;  
+       }
+       fragColor = vec4(resultColor, 1.0);
+   }
+   `
+
+    fragmentShaderTemplate = fragmentShaderUtils + fragmentShaderTemplate;
+
+    var program = g_quantitizeParameters.program;
+    // Hack: replace all ints with floats
+    const regexp = /[0-9]+(.[0-9]*)?/g;
+    var program= program.replace(regexp, function(match, token) {
+        if(match.includes("."))
+            return match;
+        return match+".0";
+    });
+
+    //Hack: replace speed with float
+    const floatSpeed = speed.toFixed(4);
+
+
+
+    var screenSize = getCanvasSize();
+
+    var startCol = hexToRgb(g_quantitizeParameters.startColor);
+    var endCol= hexToRgb(g_quantitizeParameters.endColor);
+
+    var newFragmentShader = fragmentShaderTemplate
+        .replace("PROGRAM", program)
+        .replace("SPEED", floatSpeed)
+        .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
+        .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
+        .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
+        .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
+        .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
+
+    util_copyToClipboard(newFragmentShader)
+}
+
+function experimental_mutateTime()
+{
+    pushCurrentParameters();
+    const program = g_quantitizeParameters.program;
+    const regexp = /[a-zA-Z]*\([^()]*\)/g;
+    const regexpTerminals = /[xy]/g;
+    const regexpTerminalNumbers = /[0-9]+(.[0-9]*)/g;
+    const regexpExpr= /E.E/g;
+
+    var probability = 0.2;
+
+    // Replace x or y with E
+    var result = program.replace(regexpTerminals, function(match, token) {
+        return choose(match,"t", probability); 
+    });
+    g_quantitizeParameters.program = result;
+    quantitize();
 }

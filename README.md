@@ -1,7 +1,7 @@
 <div align="center">
     <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/logo.png" alt="app overview" height="100px"/></a>
 <br>
-<i>A free-to-use offline web-based wanna-be function quantitizer for procedural generation artist.</i>
+<i>A free-to-use offline web-based wanna-be function quantitizer for procedural generation artists.</i>
 </div>
 <hr>
 
@@ -35,7 +35,9 @@ experiments with generator parameters.
 - multiple **presets** to demonstrate interesting functions and parameters
 - easy-to-use **function generator** with built-in **mutator**
 - offline, **GPU-based computation** (thanks to Three.js & WebGL)
-- intersession preset storage & exporting
+- inter-session preset storage & exporting
+- **animation** of function (experimental)
+- export to **ShaderToy** (experimental)
 
 ## About
 This is a simple playground tool to help artist with findind interesting **composite functions**, that
