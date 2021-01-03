@@ -236,6 +236,14 @@ function quantitize()
    `
 
     var program = g_quantitizeParameters.program;
+    // Hack: replace all ints with floats
+    const regexp = /[0-9]+(.[0-9]*)?/g;
+    var program= program.replace(regexp, function(match, token) {
+        if(match.includes("."))
+            return match;
+        return match+".0";
+    });
+
     var screenSize = getCanvasSize();
 
     var startCol = hexToRgb(g_quantitizeParameters.startColor);
