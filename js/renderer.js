@@ -24,7 +24,8 @@ void main() {
 var fragmentShaderUtils = `
 /*
  * Generated while using QuantitizeThemAll
- * Try it on yourself: https://romop5.github.io/QuantitizeThemAll/
+ * Try it yourself: https://romop5.github.io/QuantitizeThemAll/
+ * You can also use https://github.com/danilw/shadertoy-to-video-with-FBO to render this shader.
  */
    vec2 linear(vec2 uv)
    {
@@ -338,6 +339,12 @@ function updateHTMLFromParams()
     document.getElementById("allow_sin").checked = unaryFunc.includes("sin");
 
     document.getElementById("allow_constant").checked = g_generatorSettings.constants;
+
+
+    if(g_generatorSettings.allow_time)
+    {
+        experimental_toggleExperimental()
+    }
 }
 
 function input_setPreset()
@@ -667,11 +674,15 @@ function Base64EncodeUrl(str) {
     .replace(/=/g, '')
 }
 
-function input_shareURL()
+function getSharedURL()
 {
     const search = "?data="+Base64EncodeUrl(window.btoa(JSON.stringify(g_quantitizeParameters)));
     const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + search;
-    util_copyToClipboard(newURL);
+    return newURL;
+}
+function input_shareURL()
+{
+    util_copyToClipboard(getSharedURL());
 }
 
 function cleanPresetList()
@@ -812,7 +823,7 @@ function experimental_exportShaderToy()
    }
    `
 
-    fragmentShaderTemplate = fragmentShaderUtils + fragmentShaderTemplate;
+    fragmentShaderTemplate = "// "+getSharedURL() + "\n" + fragmentShaderUtils + fragmentShaderTemplate;
 
     var program = g_quantitizeParameters.program;
     // Hack: replace all ints with floats
