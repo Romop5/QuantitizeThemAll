@@ -43,6 +43,8 @@ canvas {
         <a href="https://github.com/Romop5/QuantitizeThemAll"><button class="small"><img src="docs/github.png" width="12px">
                 GitHub</button></a>
 
+        <button class="small" onclick="experimental_toggleExperimental()"><span class="icon-help big"></span>
+                Experimental</button>
     </div>
   </div>
 </div>
@@ -71,6 +73,9 @@ canvas {
                         GitHub</button></a>
                 
                 <!-- Place this tag where you want the button to render. -->
+
+                <button class="small inverse" onclick="experimental_toggleExperimental()"> <span class="icon-alert big inverse "></span>
+                        Experimental</button>
                 </div>
           </div>
       </div>
@@ -174,7 +179,14 @@ canvas {
               </div>
             </div>
 
-                      </fieldset>
+          </fieldset>
+            <fieldset id="experimental-menu" class="hidden">
+            <legend>Experimental</legend>
+            <button id="experimental-play" class="primary" type="button" onclick="experimental_input_toggleTime();">Play!</button>
+            <button class="primary" type="button" onclick="experimental_input_resetTime();">Reset time</button>
+            <label for="experimentalSpeed">Speed: </label>
+            <input type="number" id="experimentalSpeed" size="4" value="1.0" oninput="experimental_updateSpeed()"/>
+          </fieldset>
           <fieldset>
             <legend>Presets</legend>
             <select name="presets" id="inputPreset" placeholder="Saved preset"

@@ -95,6 +95,9 @@ function createGrammarFromConfig(config)
     // Always push inputs
     alternatives.push(["x"])
     alternatives.push(["y"])
+    // Allow time
+    if(config.allow_time)
+        alternatives.push(["t"])
 
     // Always add *+ to form binary function
     alternatives.push(["E","+","E"])

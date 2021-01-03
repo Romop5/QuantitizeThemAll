@@ -1,6 +1,8 @@
 var camera, scene, renderer;
-var mesh;
+var mesh,material;
+var time = 0, speed = 1.0;
 var strDownloadMime = "image/octet-stream";
+var tickUpdateTimer = -1;
 
 // Vertex Shader - identity
 var vertexShaderLiteral =`
@@ -45,7 +47,7 @@ function init() {
     camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
     scene = new THREE.Scene();
     var geometry = new THREE.PlaneBufferGeometry(2, 2);
-    var material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: fragmentShaderLiteral});
+    material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: fragmentShaderLiteral});
 
     mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
@@ -81,6 +83,8 @@ function onWindowResize() {
 }
 
 function animate() {
+    time = time + 0.01*speed;
+    material.uniforms.time = {value: time}
     renderer.render(scene, camera);
 }
 
@@ -212,7 +216,10 @@ function quantitize()
 
    in vec2 uvPos;
 
+   uniform float time;
+
    void main() {
+       float t = time;
        vec2 screenSize = vec2(SCREEN_SIZE);
        float uv_x = uvPos.x;
        float uv_y = uvPos.y;
@@ -265,7 +272,8 @@ function quantitize()
     try
     {
         var geometry = new THREE.PlaneBufferGeometry(2, 2);
-        var material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
+        material = new THREE.ShaderMaterial({uniforms: {"time": { value: time} }, vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
+
 
         mesh = new THREE.Mesh(geometry, material);
         resetScene();
@@ -498,7 +506,7 @@ function isFormElementChecked(elementID)
 }
 
 
-var g_generatorSettings = {minIters: 7, maxIters: 12, constants: true, oscillations: 30.0, binary: ["mod"], unary:["sin", "cos" ]}
+var g_generatorSettings = {minIters: 7, maxIters: 12, constants: true, oscillations: 30.0, allow_time: false, binary: ["mod"], unary:["sin", "cos" ]}
 function input_updateGeneratorRules()
 {
     var binaryFunc = []
@@ -710,4 +718,66 @@ function addPresetToHTML(presetName)
     optElement.value = presetName;
     optElement.innerHTML = presetName;
     document.getElementById("inputPreset").appendChild(optElement)
+}
+
+//-----------------------------------------------------------------------------
+// Experimental code
+//-----------------------------------------------------------------------------
+
+function experimental_toggleExperimental()
+{
+    var menu = document.getElementById("experimental-menu");
+    this.isToggled = !this.isToggled;
+    menu.classList.toggle("hidden", !this.isToggled);
+    g_generatorSettings.allow_time = this.isToggled;
+}
+experimental_toggleExperimental.isToggled = false;
+
+
+function experimental_input_toggleTime()
+{
+    const isTimeRunning  = (tickUpdateTimer != -1)
+    if(!isTimeRunning)
+    {
+        experimental_input_playTime();
+    } else {
+        experimental_input_stopTime();
+    }
+}
+function experimental_input_playTime()
+{
+    const isTimeRunning  = (tickUpdateTimer != -1)
+    if(tickUpdateTimer == -1)
+    {
+        tickUpdateTimer = setInterval(animate, 30);
+
+    }
+    var button= document.getElementById("experimental-play");
+    button.innerHTML = "Stop";
+    button.classList.toggle("secondary", !isTimeRunning);
+}
+
+function experimental_input_stopTime()
+{
+    const isTimeRunning  = (tickUpdateTimer != -1)
+    if(tickUpdateTimer != -1)
+    {
+        clearInterval(tickUpdateTimer);
+        tickUpdateTimer = -1;
+    }
+    var button= document.getElementById("experimental-play");
+    button.innerHTML = "Play";
+    button.classList.toggle("secondary", !isTimeRunning);
+}
+
+function experimental_input_resetTime()
+{
+    time = 0;
+    experimental_input_stopTime();
+    animate();
+}
+
+function experimental_updateSpeed()
+{
+    speed = document.getElementById("experimentalSpeed").value;
 }
