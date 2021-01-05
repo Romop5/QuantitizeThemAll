@@ -267,7 +267,7 @@ var g_quantitizeParameters = {
     hasColorThreshold: false,
     colorThreshold: 0.5
 }
-var g_quantitizeParametersStack = [g_quantitizeParameters]
+var g_quantitizeParametersStack = [ deepClone(g_quantitizeParameters)]
 var g_quantitizeParametersStackPointer  = 0
 function quantitize()
 {
@@ -497,6 +497,8 @@ function input_updateProgram()
     console.log("updateProgram()");
     var program = document.getElementById("inputProgram").value; 
     g_quantitizeParameters.program = program;
+
+    pushCurrentParameters();
     quantitize();
 }
 
@@ -508,7 +510,6 @@ function input_resetTranslation()
 }
 function input_updateTransformation()
 {
-    pushCurrentParameters();
     console.log("updateTransform()");
     var type = document.getElementById("inputTransformation").value; 
     var zoom= document.getElementById("inputZoom").value; 
@@ -525,7 +526,6 @@ function input_updateTransformation()
 
 function input_updateColor()
 {
-    pushCurrentParameters();
     console.log("updateColor()");
     var start = document.getElementById("startColor").value; 
     var end = document.getElementById("endColor").value; 
@@ -541,7 +541,6 @@ function input_updateColor()
 
 function input_invertColor()
 {
-    pushCurrentParameters();
     console.log("invertColor()");
     var start = document.getElementById("startColor").value;
     var end = document.getElementById("endColor").value;
@@ -550,12 +549,16 @@ function input_invertColor()
     input_updateColor();
 }
 
+function deepComparison(a,b)
+{
+    return JSON.stringify(a) == JSON.stringify(b);
+}
 function pushCurrentParameters()
 {
-    if(g_quantitizeParameters[g_quantitizeParameters.length-1] != g_quantitizeParameters)
+    if(!deepComparison(g_quantitizeParametersStack[g_quantitizeParametersStack.length-1],g_quantitizeParameters))
     {
         g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
-        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length;
+        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length-1;
     }
 }
 
@@ -565,10 +568,10 @@ function parametersHistoryStep(isForward)
 
     const len = g_quantitizeParametersStack.length;
     console.log("len" + len)
-    g_quantitizeParametersStackPointer = parseInt(g_quantitizeParametersStackPointer)+(isForward?1:-1);
+    g_quantitizeParametersStackPointer = parseInt(g_quantitizeParametersStackPointer)+parseInt(isForward?1:-1);
     g_quantitizeParametersStackPointer = Math.max(Math.min(g_quantitizeParametersStackPointer, len-1), 0);
 
-    g_quantitizeParameters = g_quantitizeParametersStack[g_quantitizeParametersStackPointer];
+    g_quantitizeParameters = deepClone(g_quantitizeParametersStack[g_quantitizeParametersStackPointer]);
     //console.log(g_quantitizeParameters)
     console.log(g_quantitizeParametersStackPointer)
     updateHTMLFromParams();
@@ -638,7 +641,6 @@ function input_updateGeneratorRules()
 
 function input_mutateFunction()
 {
-    pushCurrentParameters();
     const program = g_quantitizeParameters.program;
     const regexp = /[0-9]+.[0-9]*/g;
 
@@ -649,8 +651,8 @@ function input_mutateFunction()
     console.log(result)
 
     g_quantitizeParameters.program = result
+    pushCurrentParameters();
     quantitize()
-
 }
 
 function choose(alt1, alt2, probability)
@@ -662,7 +664,6 @@ function choose(alt1, alt2, probability)
 
 function input_mutateStructure()
 {
-    pushCurrentParameters();
     const program = g_quantitizeParameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
@@ -703,12 +704,13 @@ function input_mutateStructure()
         g_generatorSettings.oscillations,
         result
     );
+
+    pushCurrentParameters();
     quantitize()
 }
 
 function input_generateFunction()
 {
-    pushCurrentParameters();
     // Store current parameters
     //g_quantitizeParameters.program = generateExpression(6);
     var grammar = createGrammarFromConfig(g_generatorSettings);
@@ -718,6 +720,7 @@ function input_generateFunction()
         g_generatorSettings.oscillations
     );
     //g_quantitizeParameters.program = generateExpression(6);
+    pushCurrentParameters();
     quantitize();
 }
 function input_historyStep(isForward)
@@ -928,7 +931,6 @@ function experimental_exportShaderToy()
 
 function experimental_mutateTime()
 {
-    pushCurrentParameters();
     const program = g_quantitizeParameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
@@ -942,5 +944,6 @@ function experimental_mutateTime()
         return choose(match,"t", probability); 
     });
     g_quantitizeParameters.program = result;
+    pushCurrentParameters();
     quantitize();
 }
