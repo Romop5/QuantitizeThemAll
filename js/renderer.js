@@ -947,3 +947,17 @@ function experimental_mutateTime()
     pushCurrentParameters();
     quantitize();
 }
+
+function experimental_freezeTime()
+{
+    const regexpTerminals = /[a-zA-Z]+/g;
+    var result = g_quantitizeParameters.program.replace(regexpTerminals, function(match, token) {
+        if(match == "t")
+            return time.toFixed(2);
+        return match;
+    });
+
+    g_quantitizeParameters.program = result;
+    pushCurrentParameters();
+    quantitize();
+}
