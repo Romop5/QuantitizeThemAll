@@ -23,7 +23,7 @@ void main() {
 
 var fragmentShaderUtils = `
 /*
- * Generated while using QuantitizeThemAll
+ * Generated while using QuantizeThemAll
  * Try it yourself: https://romop5.github.io/QuantitizeThemAll/
  * You can also use https://github.com/danilw/shadertoy-to-video-with-FBO to render this shader.
  */
@@ -255,7 +255,7 @@ function setProgramInputToText(text)
    document.getElementById("inputProgram").value = text; 
 }
 
-var g_quantitizeParameters = {
+var g_quantizeParameters = {
     program: "x*0.27*sin(0.06)*mod(x,0.41)*mod(x+x,0.13)+mod(x*x+y,0.29)+0.17+sin(y+0.32+sin(sin(sin(x))))+sin(mod(mod(sin(mod(x,0.16)),0.20)*sin(0.39),0.42))*sin(mod(mod(mod(y,0.49),0.10)*mod(mod(sin(mod(x,0.15)),0.01),0.28),0.37))",
     transformationType: "linear",
     startColor: "#000000",
@@ -267,11 +267,11 @@ var g_quantitizeParameters = {
     hasColorThreshold: false,
     colorThreshold: 0.5
 }
-var g_quantitizeParametersStack = [ deepClone(g_quantitizeParameters)]
-var g_quantitizeParametersStackPointer  = 0
-function quantitize()
+var g_quantizeParametersStack = [ deepClone(g_quantizeParameters)]
+var g_quantizeParametersStackPointer  = 0
+function quantize()
 {
-   setProgramInputToText(g_quantitizeParameters.program);
+   setProgramInputToText(g_quantizeParameters.program);
    var fragmentShaderTemplate=`
    in vec2 uvPos;
 
@@ -303,7 +303,7 @@ function quantitize()
 
     fragmentShaderTemplate = fragmentShaderUtils + fragmentShaderTemplate;
 
-    var program = g_quantitizeParameters.program;
+    var program = g_quantizeParameters.program;
     // Hack: replace all ints with floats
     const regexp = /[0-9]+(.[0-9]*)?/g;
     var program= program.replace(regexp, function(match, token) {
@@ -314,19 +314,19 @@ function quantitize()
 
     var screenSize = getCanvasSize();
 
-    var startCol = hexToRgb(g_quantitizeParameters.startColor);
-    var endCol= hexToRgb(g_quantitizeParameters.endColor);
+    var startCol = hexToRgb(g_quantizeParameters.startColor);
+    var endCol= hexToRgb(g_quantizeParameters.endColor);
 
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
         .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
-        .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
-        .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
-        .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
-        .replace("OFFSET_X", parseFloat(g_quantitizeParameters.offsetX).toFixed(4))
-        .replace("OFFSET_Y", parseFloat(g_quantitizeParameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
-        .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
+        .replace("TRANSFORMATION", g_quantizeParameters.transformationType)
+        .replace("ZOOM", parseFloat(g_quantizeParameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(g_quantizeParameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(g_quantizeParameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(g_quantizeParameters.offsetY).toFixed(4))
+        .replace("THRESHOLD", g_quantizeParameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(g_quantizeParameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
     //console.log("New FS:"+newFragmentShader);
@@ -356,28 +356,28 @@ function updateConfigFromURL()
         {
             const data = window.location.search.replace("?data=", "");
             const urlSettings = JSON.parse(window.atob(Base64DecodeUrl(data)));
-            g_quantitizeParameters = urlSettings;
+            g_quantizeParameters = urlSettings;
         }
     } catch (err)
     {
         console.log("Failed to decode data from URL");
     }
-    quantitize();
+    quantize();
 }
 
 function updateHTMLFromParams()
 {
-    document.getElementById("inputProgram").value = g_quantitizeParameters.program; 
-    document.getElementById("inputTransformation").value = g_quantitizeParameters.transformationType; 
-    document.getElementById("inputZoom").value = g_quantitizeParameters.zoom; 
-    document.getElementById("inputFocal").value = g_quantitizeParameters.focal; 
-    document.getElementById("offsetX").value = g_quantitizeParameters.offsetX;
-    document.getElementById("offsetY").value = g_quantitizeParameters.offsetY;
+    document.getElementById("inputProgram").value = g_quantizeParameters.program; 
+    document.getElementById("inputTransformation").value = g_quantizeParameters.transformationType; 
+    document.getElementById("inputZoom").value = g_quantizeParameters.zoom; 
+    document.getElementById("inputFocal").value = g_quantizeParameters.focal; 
+    document.getElementById("offsetX").value = g_quantizeParameters.offsetX;
+    document.getElementById("offsetY").value = g_quantizeParameters.offsetY;
 
-    document.getElementById("startColor").value = g_quantitizeParameters.startColor; 
-    document.getElementById("endColor").value = g_quantitizeParameters.endColor; 
-    document.getElementById("enable_threshold").checked = g_quantitizeParameters.hasColorThreshold; 
-    document.getElementById("inputThreshold").value = g_quantitizeParameters.colorThreshold; 
+    document.getElementById("startColor").value = g_quantizeParameters.startColor; 
+    document.getElementById("endColor").value = g_quantizeParameters.endColor; 
+    document.getElementById("enable_threshold").checked = g_quantizeParameters.hasColorThreshold; 
+    document.getElementById("inputThreshold").value = g_quantizeParameters.colorThreshold; 
 
     document.getElementById("maxIters").value = g_generatorSettings.maxIters;
     document.getElementById("minIters").value = g_generatorSettings.minIters;
@@ -412,13 +412,13 @@ function input_setPreset()
     params = JSON.parse(db);
 
     // Pre-fill important parameters (such as zoom), which may not be part of stored preset
-    g_quantitizeParameters["zoom"] = 1.0; 
+    g_quantizeParameters["zoom"] = 1.0; 
     for (var key in params) {
         if (params.hasOwnProperty(key)) {
-            g_quantitizeParameters[key] = params[key];
+            g_quantizeParameters[key] = params[key];
         }
     }
-    quantitize();
+    quantize();
     console.log("Params: " + db);
     updateHTMLFromParams()
 }
@@ -427,7 +427,7 @@ function input_savePreset()
 {
     console.log("savePreset()");
     var programName = document.getElementById("inputPresetName").value; 
-    storePreset(programName, g_quantitizeParameters);
+    storePreset(programName, g_quantizeParameters);
     addPresetToHTML(programName)
 }
 
@@ -496,10 +496,10 @@ function input_updateProgram()
 {
     console.log("updateProgram()");
     var program = document.getElementById("inputProgram").value; 
-    g_quantitizeParameters.program = program;
+    g_quantizeParameters.program = program;
 
     pushCurrentParameters();
-    quantitize();
+    quantize();
 }
 
 function input_resetTranslation()
@@ -516,11 +516,11 @@ function input_updateTransformation()
     var focal = document.getElementById("inputFocal").value; 
     var offsetX = document.getElementById("offsetX").value; 
     var offsetY = document.getElementById("offsetY").value; 
-    g_quantitizeParameters.transformationType = type;
-    g_quantitizeParameters.zoom = zoom;
-    g_quantitizeParameters.focal = focal;
-    g_quantitizeParameters.offsetX = offsetX;
-    g_quantitizeParameters.offsetY = offsetY;
+    g_quantizeParameters.transformationType = type;
+    g_quantizeParameters.zoom = zoom;
+    g_quantizeParameters.focal = focal;
+    g_quantizeParameters.offsetX = offsetX;
+    g_quantizeParameters.offsetY = offsetY;
     input_updateProgram();
 }
 
@@ -531,10 +531,10 @@ function input_updateColor()
     var end = document.getElementById("endColor").value; 
     var enabler = document.getElementById("enable_threshold").checked; 
     var thresholdSlider= document.getElementById("inputThreshold"); 
-    g_quantitizeParameters.startColor= start;
-    g_quantitizeParameters.endColor= end;
-    g_quantitizeParameters.hasColorThreshold= enabler;
-    g_quantitizeParameters.colorThreshold= thresholdSlider.value;
+    g_quantizeParameters.startColor= start;
+    g_quantizeParameters.endColor= end;
+    g_quantizeParameters.hasColorThreshold= enabler;
+    g_quantizeParameters.colorThreshold= thresholdSlider.value;
     thresholdSlider.disabled = !enabler;
     input_updateProgram();
 }
@@ -555,25 +555,25 @@ function deepComparison(a,b)
 }
 function pushCurrentParameters()
 {
-    if(!deepComparison(g_quantitizeParametersStack[g_quantitizeParametersStack.length-1],g_quantitizeParameters))
+    if(!deepComparison(g_quantizeParametersStack[g_quantizeParametersStack.length-1],g_quantizeParameters))
     {
-        g_quantitizeParametersStack.push(deepClone(g_quantitizeParameters));
-        g_quantitizeParametersStackPointer = g_quantitizeParametersStack.length-1;
+        g_quantizeParametersStack.push(deepClone(g_quantizeParameters));
+        g_quantizeParametersStackPointer = g_quantizeParametersStack.length-1;
     }
 }
 
 function parametersHistoryStep(isForward)
 {
-    console.log(g_quantitizeParametersStackPointer)
+    console.log(g_quantizeParametersStackPointer)
 
-    const len = g_quantitizeParametersStack.length;
+    const len = g_quantizeParametersStack.length;
     console.log("len" + len)
-    g_quantitizeParametersStackPointer = parseInt(g_quantitizeParametersStackPointer)+parseInt(isForward?1:-1);
-    g_quantitizeParametersStackPointer = Math.max(Math.min(g_quantitizeParametersStackPointer, len-1), 0);
+    g_quantizeParametersStackPointer = parseInt(g_quantizeParametersStackPointer)+parseInt(isForward?1:-1);
+    g_quantizeParametersStackPointer = Math.max(Math.min(g_quantizeParametersStackPointer, len-1), 0);
 
-    g_quantitizeParameters = deepClone(g_quantitizeParametersStack[g_quantitizeParametersStackPointer]);
-    //console.log(g_quantitizeParameters)
-    console.log(g_quantitizeParametersStackPointer)
+    g_quantizeParameters = deepClone(g_quantizeParametersStack[g_quantizeParametersStackPointer]);
+    //console.log(g_quantizeParameters)
+    console.log(g_quantizeParametersStackPointer)
     updateHTMLFromParams();
 }
 
@@ -641,7 +641,7 @@ function input_updateGeneratorRules()
 
 function input_mutateFunction()
 {
-    const program = g_quantitizeParameters.program;
+    const program = g_quantizeParameters.program;
     const regexp = /[0-9]+.[0-9]*/g;
 
     var result = program.replace(regexp, function(match, token) {
@@ -650,9 +650,9 @@ function input_mutateFunction()
     });
     console.log(result)
 
-    g_quantitizeParameters.program = result
+    g_quantizeParameters.program = result
     pushCurrentParameters();
-    quantitize()
+    quantize()
 }
 
 function choose(alt1, alt2, probability)
@@ -664,7 +664,7 @@ function choose(alt1, alt2, probability)
 
 function input_mutateStructure()
 {
-    const program = g_quantitizeParameters.program;
+    const program = g_quantizeParameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
     const regexpTerminalNumbers = /[0-9]+(\.[0-9]*)/g;
@@ -698,7 +698,7 @@ function input_mutateStructure()
 
 
     var grammar = createGrammarFromConfig(g_generatorSettings);
-    g_quantitizeParameters.program = generateExpressionFromGrammar(grammar,
+    g_quantizeParameters.program = generateExpressionFromGrammar(grammar,
         1,
         2,
         g_generatorSettings.oscillations,
@@ -706,27 +706,27 @@ function input_mutateStructure()
     );
 
     pushCurrentParameters();
-    quantitize()
+    quantize()
 }
 
 function input_generateFunction()
 {
     // Store current parameters
-    //g_quantitizeParameters.program = generateExpression(6);
+    //g_quantizeParameters.program = generateExpression(6);
     var grammar = createGrammarFromConfig(g_generatorSettings);
-    g_quantitizeParameters.program = generateExpressionFromGrammar(grammar,
+    g_quantizeParameters.program = generateExpressionFromGrammar(grammar,
         g_generatorSettings.minIters,
         g_generatorSettings.maxIters,
         g_generatorSettings.oscillations
     );
-    //g_quantitizeParameters.program = generateExpression(6);
+    //g_quantizeParameters.program = generateExpression(6);
     pushCurrentParameters();
-    quantitize();
+    quantize();
 }
 function input_historyStep(isForward)
 {
     parametersHistoryStep(isForward);
-    quantitize();
+    quantize();
 }
 
 // Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
@@ -745,7 +745,7 @@ function Base64EncodeUrl(str) {
 
 function getSharedURL()
 {
-    const search = "?data="+Base64EncodeUrl(window.btoa(JSON.stringify(g_quantitizeParameters)));
+    const search = "?data="+Base64EncodeUrl(window.btoa(JSON.stringify(g_quantizeParameters)));
     const newURL = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + search;
     return newURL;
 }
@@ -894,7 +894,7 @@ function experimental_exportShaderToy()
 
     fragmentShaderTemplate = "// "+getSharedURL() + "\n" + fragmentShaderUtils + fragmentShaderTemplate;
 
-    var program = g_quantitizeParameters.program;
+    var program = g_quantizeParameters.program;
     // Hack: replace all ints with floats
     const regexp = /[0-9]+(.[0-9]*)?/g;
     var program= program.replace(regexp, function(match, token) {
@@ -910,19 +910,19 @@ function experimental_exportShaderToy()
 
     var screenSize = getCanvasSize();
 
-    var startCol = hexToRgb(g_quantitizeParameters.startColor);
-    var endCol= hexToRgb(g_quantitizeParameters.endColor);
+    var startCol = hexToRgb(g_quantizeParameters.startColor);
+    var endCol= hexToRgb(g_quantizeParameters.endColor);
 
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
         .replace("SPEED", floatSpeed)
-        .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
-        .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
-        .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
-        .replace("OFFSET_X", parseFloat(g_quantitizeParameters.offsetX).toFixed(4))
-        .replace("OFFSET_Y", parseFloat(g_quantitizeParameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
-        .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
+        .replace("TRANSFORMATION", g_quantizeParameters.transformationType)
+        .replace("ZOOM", parseFloat(g_quantizeParameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(g_quantizeParameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(g_quantizeParameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(g_quantizeParameters.offsetY).toFixed(4))
+        .replace("THRESHOLD", g_quantizeParameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(g_quantizeParameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
 
@@ -931,7 +931,7 @@ function experimental_exportShaderToy()
 
 function experimental_mutateTime()
 {
-    const program = g_quantitizeParameters.program;
+    const program = g_quantizeParameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
     const regexpTerminalNumbers = /[0-9]+(.[0-9]*)/g;
@@ -943,21 +943,21 @@ function experimental_mutateTime()
     var result = program.replace(regexpTerminals, function(match, token) {
         return choose(match,"t", probability); 
     });
-    g_quantitizeParameters.program = result;
+    g_quantizeParameters.program = result;
     pushCurrentParameters();
-    quantitize();
+    quantize();
 }
 
 function experimental_freezeTime()
 {
     const regexpTerminals = /[a-zA-Z]+/g;
-    var result = g_quantitizeParameters.program.replace(regexpTerminals, function(match, token) {
+    var result = g_quantizeParameters.program.replace(regexpTerminals, function(match, token) {
         if(match == "t")
             return time.toFixed(2);
         return match;
     });
 
-    g_quantitizeParameters.program = result;
+    g_quantizeParameters.program = result;
     pushCurrentParameters();
-    quantitize();
+    quantize();
 }

@@ -1,7 +1,7 @@
 <div align="center">
     <a href="https://romop5.github.io/QuantitizeThemAll/index.html"><img src="https://raw.githubusercontent.com/Romop5/QuantitizeThemAll/main/docs/logo.png" alt="app overview" height="100px"/></a>
 <br>
-<i>A free-to-use offline web-based wanna-be function quantitizer for procedural generation artists.</i>
+<i>A free-to-use offline web-based wanna-be function quantizer for procedural generation artists.</i>
 </div>
 <hr>
 
