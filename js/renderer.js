@@ -99,10 +99,59 @@ function init() {
 
     initializeDefaultPresets();
     window.addEventListener('resize', onWindowResize, false);
-
+    renderer.domElement.onwheel = onZoom;
+    renderer.domElement.onmousemove = onMouseMove;
+    window.onkeydown = onKeydown;
 
     updateConfigFromURL();
     updateHTMLFromParams();
+}
+
+function onKeydown(event)
+{
+    if(event.target != document.body)
+        return;
+    if(event.key =="f")
+    {
+        document.getElementById("canvas-parent").classList.toggle("col-lg-6");
+        document.getElementById("canvas-parent").classList.toggle("col-lg-12");
+        onWindowResize();
+    }
+
+    if(event.key =="g")
+        input_generateFunction();
+
+    if(event.key =="m")
+        input_mutateFunction();
+
+    if(event.key =="s")
+        input_mutateStructure();
+
+    if(event.key =="u")
+        input_historyStep(false);
+
+    if(event.key =="r")
+        input_historyStep(true);
+}
+function onMouseMove(event)
+{
+    if(event.buttons != 0)
+    {
+        event.preventDefault();
+        const offsetX = parseFloat(document.getElementById("offsetX").value)
+        document.getElementById("offsetX").value =  offsetX + event.movementX*0.01;
+        const offsetY = parseFloat(document.getElementById("offsetY").value)
+        document.getElementById("offsetY").value =  offsetY - event.movementY*0.01;
+        input_updateTransformation();
+    }
+    console.log(event);
+}
+function onZoom(event)
+{
+    event.preventDefault();
+    const currentZoom = parseFloat(document.getElementById("inputZoom").value)
+    document.getElementById("inputZoom").value =  currentZoom + event.deltaY*0.1;
+    input_updateTransformation();
 }
 
 function getCanvasSize()
@@ -211,6 +260,8 @@ var g_quantitizeParameters = {
     transformationType: "linear",
     startColor: "#000000",
     endColor: "#FF3300",
+    offsetX: 0.0,
+    offsetY: 0.0,
     zoom: 1.0,
     focal: 1.0,
     hasColorThreshold: false,
@@ -229,11 +280,11 @@ function quantitize()
    void main() {
        float t = time;
        vec2 screenSize = vec2(SCREEN_SIZE);
-       float uv_x = uvPos.x;
-       float uv_y = uvPos.y;
+       float uv_x = uvPos.x + OFFSET_X;
+       float uv_y = uvPos.y + OFFSET_Y;
        vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y)*vec2(ZOOM));
-       float x = resultingUv.x;
-       float y = resultingUv.y;
+       float x = resultingUv.x ;
+       float y = resultingUv.y ;
        float program = PROGRAM;
        float parameter = clamp(program, 0.0,1.0);
 
@@ -272,6 +323,8 @@ function quantitize()
         .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
         .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
         .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(g_quantitizeParameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(g_quantitizeParameters.offsetY).toFixed(4))
         .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
         .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
@@ -318,6 +371,8 @@ function updateHTMLFromParams()
     document.getElementById("inputTransformation").value = g_quantitizeParameters.transformationType; 
     document.getElementById("inputZoom").value = g_quantitizeParameters.zoom; 
     document.getElementById("inputFocal").value = g_quantitizeParameters.focal; 
+    document.getElementById("offsetX").value = g_quantitizeParameters.offsetX;
+    document.getElementById("offsetY").value = g_quantitizeParameters.offsetY;
 
     document.getElementById("startColor").value = g_quantitizeParameters.startColor; 
     document.getElementById("endColor").value = g_quantitizeParameters.endColor; 
@@ -328,6 +383,7 @@ function updateHTMLFromParams()
     document.getElementById("minIters").value = g_generatorSettings.minIters;
     document.getElementById("oscillation").value = g_generatorSettings.oscillations;
     document.getElementById("allow_constant").checked = g_generatorSettings.constants;
+
 
     const binaryFunc = g_generatorSettings.binary;
     const unaryFunc = g_generatorSettings.unary;
@@ -444,6 +500,12 @@ function input_updateProgram()
     quantitize();
 }
 
+function input_resetTranslation()
+{
+    document.getElementById("offsetX").value = 0.0; 
+    document.getElementById("offsetY").value = 0.0;
+    input_updateTransformation();
+}
 function input_updateTransformation()
 {
     pushCurrentParameters();
@@ -451,9 +513,13 @@ function input_updateTransformation()
     var type = document.getElementById("inputTransformation").value; 
     var zoom= document.getElementById("inputZoom").value; 
     var focal = document.getElementById("inputFocal").value; 
+    var offsetX = document.getElementById("offsetX").value; 
+    var offsetY = document.getElementById("offsetY").value; 
     g_quantitizeParameters.transformationType = type;
     g_quantitizeParameters.zoom = zoom;
     g_quantitizeParameters.focal = focal;
+    g_quantitizeParameters.offsetX = offsetX;
+    g_quantitizeParameters.offsetY = offsetY;
     input_updateProgram();
 }
 
@@ -805,8 +871,8 @@ function experimental_exportShaderToy()
        uv += -1.0;
        float t = iTime*SPEED;
        vec2 resultingUv = TRANSFORMATION(vec2(uv.x, uv.y)*vec2(ZOOM));
-       float x = resultingUv.x;
-       float y = resultingUv.y;
+       float x = resultingUv.x + OFFSET_X;
+       float y = resultingUv.y + OFFSET_Y;
        float program = PROGRAM;
        float parameter = clamp(program, 0.0,1.0);
 
@@ -850,6 +916,8 @@ function experimental_exportShaderToy()
         .replace("TRANSFORMATION", g_quantitizeParameters.transformationType)
         .replace("ZOOM", parseFloat(g_quantitizeParameters.zoom).toFixed(4))
         .replace("FOCAL", parseFloat(g_quantitizeParameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(g_quantitizeParameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(g_quantitizeParameters.offsetY).toFixed(4))
         .replace("THRESHOLD", g_quantitizeParameters["hasColorThreshold"])
         .replace("THRESHVALUE", parseFloat(g_quantitizeParameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)

@@ -158,6 +158,15 @@ canvas {
                         <input type="range" step="0.1" min="0.1" max="5" value="1.0" class="slider"
                          id="inputFocal" oninput="input_updateTransformation()">
                   </div>
+                    <div class="col-sm-12 col-md-4">
+                        <legend>Offset (X,Y)</legend>
+                        <input type="text" id="offsetX" size="4" value="0.0" step="0.1"
+                            oninput="input_updateTransformation()"/>
+                        <input type="text" id="offsetY" size="4" value="0.0" step="0.1"
+                            oninput="input_updateTransformation()"/>
+                        <button class="secondary small" type="button"
+                                                      onclick="input_resetTranslation();">Rst</button>
+                  </div>
               </div>
               <div class="row">
                   <div class="col-sm-12 col-md-4">
