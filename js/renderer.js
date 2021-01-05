@@ -666,8 +666,8 @@ function input_mutateStructure()
     const program = g_quantitizeParameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
-    const regexpTerminalNumbers = /[0-9]+(.[0-9]*)/g;
-    const regexpExpr= /E.E/g;
+    const regexpTerminalNumbers = /[0-9]+(\.[0-9]*)/g;
+    const regexpExpr= /E[^,]E/g;
 
     var probability = 0.3;
 
