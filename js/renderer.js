@@ -224,6 +224,12 @@ var saveFile = function (strData, filename) {
 //-----------------------------------------------------------------------------
 // Functionality
 //-----------------------------------------------------------------------------
+// Taken from https://developer.mozilla.org/en-US/docs/Web/API/Node
+function removeAllChildren(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild)
+  }
+}
 
 // Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
 function Base64DecodeUrl(str) 
@@ -682,10 +688,10 @@ function choose(alt1, alt2, probability)
         return alt1;
     return alt2;
 }
-
-function input_mutateStructure()
+function mutateParametersStructure(inputParameters)
 {
-    const program = g_quantizeParameters.program;
+    var parameters = deepClone(inputParameters);
+    const program = parameters.program;
     const regexp = /[a-zA-Z]*\([^()]*\)/g;
     const regexpTerminals = /[xy]/g;
     const regexpTerminalNumbers = /[0-9]+(\.[0-9]*)/g;
@@ -717,15 +723,18 @@ function input_mutateStructure()
 
     result = result.split(/(E)/);
 
-
     var grammar = createGrammarFromConfig(g_generatorSettings);
-    g_quantizeParameters.program = generateExpressionFromGrammar(grammar,
+    parameters.program = generateExpressionFromGrammar(grammar,
         1,
         2,
         g_generatorSettings.oscillations,
         result
     );
-
+    return parameters;
+}
+function input_mutateStructure()
+{
+    g_quantizeParameters = mutateParametersStructure(g_quantizeParameters);
     pushCurrentParameters();
     quantize()
 }
@@ -950,4 +959,79 @@ function experimental_freezeTime()
     g_quantizeParameters.program = result;
     pushCurrentParameters();
     quantize();
+}
+
+function experimental_mutateGrid()
+{
+    setupOperationGrid(function (params)
+    {
+        var param = params
+        const program = param.program;
+        const regexp = /[0-9]+.[0-9]*/g;
+
+        var result = program.replace(regexp, function(match, token) {
+            const newVal = match*(Math.random()*2.0) + Math.random()
+            return (newVal).toFixed(2).toString();
+        });
+
+        param.program = result
+        return param;
+    })
+}
+
+function experimental_mutateGridStructure()
+{
+    setupOperationGrid(mutateParametersStructure);
+}
+
+
+
+function setupOperationGrid(operationFunction)
+{
+    document.getElementById("previewGrid").classList.remove("hidden");
+    removeAllChildren(document.getElementById("previewElements"));
+
+    var offscreenRenderer = new THREE.WebGLRenderer({
+        preserveDrawingBuffer: true,
+        precision: "highp"
+    });
+
+    const count = 32;
+    const perLine= 8;
+    const linesCount = count/perLine
+
+    var width = window.innerWidth/perLine - 20;
+    var height = window.innerHeight/linesCount - 20;
+    offscreenRenderer.setSize(width, height);
+
+    for(var i = 1; i <= count ; i=i+1)
+    {
+        var params = operationFunction(deepClone(g_quantizeParameters))
+        var mutatedScene = setupScene(params)
+        offscreenRenderer.render(mutatedScene, camera);
+
+        function createParamsClosure(param)
+        {
+            var params = param;
+            return function ()
+            {
+                removeAllChildren(document.getElementById("previewElements"));
+                document.getElementById("previewGrid").classList.add("hidden");
+
+                g_quantizeParameters = deepClone(params);
+                updateHTMLFromParams();
+                pushCurrentParameters();
+                quantize();
+            }
+        }
+
+        var image = new Image();
+        image.src = offscreenRenderer.domElement.toDataURL();
+        image.onclick = createParamsClosure(params);
+
+        document.getElementById("previewElements")
+            .appendChild(image)
+        if(i % perLine == 0)
+            document.getElementById("previewElements").appendChild(document.createElement("br"));
+    }
 }

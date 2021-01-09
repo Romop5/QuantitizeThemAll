@@ -30,7 +30,36 @@ canvas {
 .error-input{
     color:#f00;
 }
+
+#previewGrid
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background: rgba(200,200,200,0.5);
+    text-align: center;
+    z-index: 1000;
+}
+#previewGrid img
+{
+    margin: 5px;
+    border: 1px solid;    
+}
+#previewGrid img:hover
+{
+    border: 1px solid #f00;    
+}
+
 </style>
+
+<div id="previewGrid" class="container hidden">
+    <div>
+        <button class="secondary" onclick="document.getElementById('previewGrid').classList.toggle('hidden');">Close </button>
+    </div>
+    <div id="previewElements"></div>
+</div>
 
 <div class="container hidden-lg">
   <div class="row">
@@ -38,13 +67,15 @@ canvas {
         <h1>QuantizeThemAll <img src="docs/logo.png" width="64px"></h1>
     </div>
     <div class="col-sm-12 col-md-6" style="text-align: right;">
-        <a href="docs/about.html"><button class="small"><span class="icon-help big"></span>
-                Help </button></a>
+        <button class="small" type="button" onclick="input_shareURL();"><span class="icon-link"></span> Share</button>
         <a href="https://github.com/Romop5/QuantitizeThemAll"><button class="small"><img src="docs/github.png" width="12px">
                 GitHub</button></a>
 
-        <button class="small" onclick="experimental_toggleExperimental()"><span class="icon-help big"></span>
+        <button class="small inverse" onclick="experimental_toggleExperimental()"><span
+                class="icon-help big inverse"></span>
                 Experimental</button>
+        <a href="docs/about.html"><button class="small"><span class="icon-help big"></span>
+                </button></a>
     </div>
   </div>
 </div>
@@ -67,13 +98,12 @@ canvas {
                 <h1>QuantizeThemAll <img src="docs/logo.png" width="64px"></h1>
             </div>
             <div class="col-sm-12 col-md-6" style="text-align: right;">
+                <button class="small" type="button" onclick="input_shareURL();"><span class="icon-link"></span> Share</button>
                 <a href="docs/about.html"><button class="small"><span class="icon-help big"></span>
-                        Help </button></a>
+                        </button></a>
                 <a href="https://github.com/Romop5/QuantitizeThemAll"><button class="small"><img src="docs/github.png" width="12px">
-                        GitHub</button></a>
+                        </button></a>
                 
-                <!-- Place this tag where you want the button to render. -->
-
                 <button class="small inverse" onclick="experimental_toggleExperimental()"> <span class="icon-alert big inverse "></span>
                         Experimental</button>
                 </div>
@@ -92,9 +122,12 @@ canvas {
                         onclick="input_mutateFunction();">Mutate!</button>
                     <button class="secondary" type="button"
                         onclick="input_mutateStructure();">Mutate structure!</button>
+                    <button class="primary" type="button" onclick="experimental_mutateGrid();">#
+                        Const</button>
+                    <button class="primary" type="button"
+                        onclick="experimental_mutateGridStructure();"># Struct</button>
                     <button class="secondary" type="button" onclick="input_historyStep(false);">Undo!</button>
                     <button class="secondary" type="button" onclick="input_historyStep(true);">Redo!</button>
-                    <button class="" type="button" onclick="input_shareURL();"><span class="icon-link"></span> Share URL!</button>
                 </div>
              </div>
               <div class="row">
@@ -165,10 +198,8 @@ canvas {
                         <input type="text" id="offsetY" size="4" value="0.0" step="0.1"
                             oninput="input_updateTransformation()"/>
                         <button class="secondary small" type="button"
-                                                      onclick="input_resetTranslation();">Rst</button>
+                                                      onclick="input_resetTranslation();">Clear</button>
                   </div>
-              </div>
-              <div class="row">
                   <div class="col-sm-12 col-md-4">
                     <legend>Coloring</legend>
                     <input type="color" id="startColor" value="#ff0000" oninput="input_updateColor()" />
