@@ -15,6 +15,7 @@
     <script type="text/javascript" src="js/three.min.js"></script>
     <script type="text/javascript" src="js/renderer.js"></script>
     <script type="text/javascript" src="js/generator.js"></script>
+    <link rel="icon" href="docs/logo.png" type="image/png" sizes="16x16">
 </head>
 <body>
 <style>
@@ -155,10 +156,10 @@ body.waiting * {
                   <div class="col-sm-12">
                         <legend>Generator settings</legend>
                         <label for="minIters">Min. iterations:</label>
-                        <input type="number" size="3" value="5" min="1" max="20" id="minIters" onchange="input_updateGeneratorRules();">
+                        <input type="number" size="3" value="5" min="1" max="40" id="minIters" onchange="input_updateGeneratorRules();">
 
                         <label for="maxIters">Max. iterations:</label>
-                        <input type="number" size="3" value="1" min="1" max="20" id="maxIters" onchange="input_updateGeneratorRules();">
+                        <input type="number" size="3" value="1" min="1" max="40" id="maxIters" onchange="input_updateGeneratorRules();">
 
                         <label for="oscillation">Randomizer oscillations:</label>
                         <input type="number" size="5" value="1" min="1" max="10000" id="oscillation" onchange="input_updateGeneratorRules();">
@@ -170,6 +171,9 @@ body.waiting * {
 
                         <input type="checkbox" id="allow_sin" onchange="input_updateGeneratorRules();">
                         <label for="allow_sin">sin,cos</label>
+
+                        <input type="checkbox" id="allow_tan" onchange="input_updateGeneratorRules();">
+                        <label for="allow_tan">tan</label>
 
                         <input type="checkbox" id="allow_minmax" onchange="input_updateGeneratorRules();">
                         <label for="allow_minmax">min max</label>

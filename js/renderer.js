@@ -427,6 +427,7 @@ function updateHTMLFromParams()
     document.getElementById("allow_modulo").checked = binaryFunc.includes("mod");
     document.getElementById("allow_pow").checked = binaryFunc.includes("pow");
     document.getElementById("allow_sin").checked = unaryFunc.includes("sin");
+    document.getElementById("allow_tan").checked = unaryFunc.includes("tan");
 
     document.getElementById("allow_constant").checked = g_generatorSettings.constants;
 
@@ -650,6 +651,11 @@ function input_updateGeneratorRules()
         unaryFunc.push("sin");
     }
 
+    if(isFormElementChecked("allow_tan"))
+    {
+        unaryFunc.push("tan");
+    }
+
     if(isFormElementChecked("allow_minmax"))
     {
         binaryFunc.push("min");
@@ -657,8 +663,8 @@ function input_updateGeneratorRules()
     }
 
     g_generatorSettings = deepClone({
-        minIters: getFormElementValue("minIters", 1),
-        maxIters: getFormElementValue("maxIters", 5),
+        minIters: getFormElementValue("minIters", 5),
+        maxIters: getFormElementValue("maxIters", 20),
         binary: binaryFunc,
         unary: unaryFunc,
         constants: isFormElementChecked("allow_constant"),
@@ -1039,7 +1045,7 @@ function setupOperationGrid(operationFunction)
         if(i % perLine == 0)
             document.getElementById("previewElements").appendChild(document.createElement("br"));
 
-        }, 100);
+        }, 0);
     }
     document.getElementById("gridRedoButton").onclick = function ()
     {
