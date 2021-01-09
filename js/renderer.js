@@ -989,6 +989,7 @@ function experimental_mutateGridStructure()
 function setupOperationGrid(operationFunction)
 {
     document.getElementById("previewGrid").classList.remove("hidden");
+
     removeAllChildren(document.getElementById("previewElements"));
 
     var offscreenRenderer = new THREE.WebGLRenderer({
@@ -996,8 +997,9 @@ function setupOperationGrid(operationFunction)
         precision: "highp"
     });
 
-    const count = 32;
-    const perLine= 8;
+
+    const count = 16;
+    const perLine= 4;
     const linesCount = count/perLine
 
     var width = window.innerWidth/perLine - 20;
@@ -1006,6 +1008,9 @@ function setupOperationGrid(operationFunction)
 
     for(var i = 1; i <= count ; i=i+1)
     {
+
+        setTimeout(function ()
+        {
         var params = operationFunction(deepClone(g_quantizeParameters))
         var mutatedScene = setupScene(params)
         offscreenRenderer.render(mutatedScene, camera);
@@ -1033,5 +1038,11 @@ function setupOperationGrid(operationFunction)
             .appendChild(image)
         if(i % perLine == 0)
             document.getElementById("previewElements").appendChild(document.createElement("br"));
+
+        }, 100);
     }
+    document.getElementById("gridRedoButton").onclick = function ()
+    {
+        setupOperationGrid(operationFunction)
+    };
 }
