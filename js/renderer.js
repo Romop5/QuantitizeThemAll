@@ -1,5 +1,4 @@
 var camera, g_scene, g_renderer;
-var g_material;
 var time = 0, speed = 1.0;
 var tickUpdateTimer = -1;
 
@@ -69,6 +68,7 @@ function createPlanarScene(vs, fs, uniforms)
     var material = new THREE.ShaderMaterial({"uniforms": uniforms, "vertexShader": vs, "fragmentShader": fs});
 
     var mesh = new THREE.Mesh(geometry, material);
+    mesh.name = "plane";
 
     var scene = new THREE.Scene();
     scene.add(mesh);
@@ -173,7 +173,8 @@ function onWindowResize() {
 
 function animate() {
     time = time + 0.01*speed;
-    g_material.uniforms.time = {value: time}
+    var plane = g_scene.getObjectByName("plane");
+    plane.material.uniforms.time = {value: time}
     g_renderer.render(g_scene, camera);
 }
 
@@ -270,10 +271,10 @@ function hexToRgb(hex) {
 }
 
 // Taken from https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene/48722282
-function resetScene()
+function resetScene(scene)
 {
-    while(g_scene.children.length > 0){ 
-        g_scene.remove(g_scene.children[0]); 
+    while(scene.children.length > 0){ 
+        scene.remove(scene.children[0]); 
     }
 }
 function setProgramInputToText(text)
@@ -295,9 +296,9 @@ var g_quantizeParameters = {
 }
 var g_quantizeParametersStack = [ deepClone(g_quantizeParameters)]
 var g_quantizeParametersStackPointer  = 0
-function quantize()
+
+function setupScene(parameters)
 {
-   setProgramInputToText(g_quantizeParameters.program);
    var fragmentShaderTemplate=`
    in vec2 uvPos;
 
@@ -329,7 +330,7 @@ function quantize()
 
     fragmentShaderTemplate = fragmentShaderUtils + fragmentShaderTemplate;
 
-    var program = g_quantizeParameters.program;
+    var program = parameters.program;
     // Hack: replace all ints with floats
     const regexp = /[0-9]+(.[0-9]*)?/g;
     var program= program.replace(regexp, function(match, token) {
@@ -340,28 +341,34 @@ function quantize()
 
     var screenSize = getCanvasSize();
 
-    var startCol = hexToRgb(g_quantizeParameters.startColor);
-    var endCol= hexToRgb(g_quantizeParameters.endColor);
+    var startCol = hexToRgb(parameters.startColor);
+    var endCol= hexToRgb(parameters.endColor);
 
     var newFragmentShader = fragmentShaderTemplate
         .replace("PROGRAM", program)
         .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
-        .replace("TRANSFORMATION", g_quantizeParameters.transformationType)
-        .replace("ZOOM", parseFloat(g_quantizeParameters.zoom).toFixed(4))
-        .replace("FOCAL", parseFloat(g_quantizeParameters.focal).toFixed(4))
-        .replace("OFFSET_X", parseFloat(g_quantizeParameters.offsetX).toFixed(4))
-        .replace("OFFSET_Y", parseFloat(g_quantizeParameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", g_quantizeParameters["hasColorThreshold"])
-        .replace("THRESHVALUE", parseFloat(g_quantizeParameters["colorThreshold"]).toFixed(4))
+        .replace("TRANSFORMATION", parameters.transformationType)
+        .replace("ZOOM", parseFloat(parameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(parameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(parameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(parameters.offsetY).toFixed(4))
+        .replace("THRESHOLD", parameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(parameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
-    //console.log("New FS:"+newFragmentShader);
 
+    var scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
+    return scene;
+}
+
+function quantize()
+{
+    setProgramInputToText(g_quantizeParameters.program);
     var hasCompilationError = false;
     try
     {
-        resetScene();
-        g_scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
+        resetScene(g_scene);
+        g_scene = setupScene(g_quantizeParameters)
         g_renderer.render(g_scene, camera);
     } catch(err)
     {
