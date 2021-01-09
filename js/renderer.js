@@ -1,7 +1,6 @@
-var camera, scene, renderer;
-var mesh,material;
+var camera, g_scene, g_renderer;
+var g_material;
 var time = 0, speed = 1.0;
-var strDownloadMime = "image/octet-stream";
 var tickUpdateTimer = -1;
 
 // Vertex Shader - identity
@@ -67,9 +66,9 @@ var fragmentShaderUtils = `
 function createPlanarScene(vs, fs, uniforms)
 {
     var geometry = new THREE.PlaneBufferGeometry(2, 2);
-    material = new THREE.ShaderMaterial({"uniforms": uniforms, "vertexShader": vs, "fragmentShader": fs});
+    var material = new THREE.ShaderMaterial({"uniforms": uniforms, "vertexShader": vs, "fragmentShader": fs});
 
-    mesh = new THREE.Mesh(geometry, material);
+    var mesh = new THREE.Mesh(geometry, material);
 
     var scene = new THREE.Scene();
     scene.add(mesh);
@@ -79,38 +78,30 @@ function createPlanarScene(vs, fs, uniforms)
 function init() {
 
     console.log("Init()");
-    var saveLink = document.createElement('div');
-    saveLink.style.position = 'absolute';
-    saveLink.style.top = '10px';
-    saveLink.style.width = '100%';
-    saveLink.style.color = 'white !important';
-    saveLink.style.textAlign = 'center';
-    saveLink.innerHTML =
-        '<a href="#" id="saveLink">Save Frame</a>';
-    //document.body.appendChild(saveLink);
-    //document.getElementById("saveLink").addEventListener('click', saveAsImage);
-    renderer = new THREE.WebGLRenderer({
+    g_renderer = new THREE.WebGLRenderer({
         preserveDrawingBuffer: true,
         precision: "highp"
     });
     var size = getCanvasSize();
-    renderer.setSize(size.width, size.height);
-    document.getElementById("canv").appendChild(renderer.domElement);
-    //document.body.appendChild(renderer.domElement);
+    g_renderer.setSize(size.width, size.height);
+    document.getElementById("canv").appendChild(g_renderer.domElement);
 
     camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-    scene = createPlanarScene(vertexShaderLiteral, fragmentShaderLiteral, {})
-    renderer.render(scene, camera);
+    g_scene = createPlanarScene(vertexShaderLiteral, fragmentShaderLiteral, {})
+    g_renderer.render(g_scene, camera);
 
     initializeDefaultPresets();
     window.addEventListener('resize', onWindowResize, false);
-    renderer.domElement.onwheel = onZoom;
-    renderer.domElement.onmousemove = onMouseMove;
+    g_renderer.domElement.onwheel = onZoom;
+    g_renderer.domElement.onmousemove = onMouseMove;
     window.onkeydown = onKeydown;
 
     updateConfigFromURL();
     updateHTMLFromParams();
 }
+//-----------------------------------------------------------------------------
+// Input handling
+//-----------------------------------------------------------------------------
 
 function onKeydown(event)
 {
@@ -175,15 +166,15 @@ function onWindowResize() {
 
     var screenSize = getCanvasSize();
     const height = (screenSize.width < screenSize.height)?screenSize.width:screenSize.height;
-    renderer.setSize(screenSize.width, height);
-    renderer.render(scene, camera);
+    g_renderer.setSize(screenSize.width, height);
+    g_renderer.render(g_scene, camera);
 
 }
 
 function animate() {
     time = time + 0.01*speed;
-    material.uniforms.time = {value: time}
-    renderer.render(scene, camera);
+    g_material.uniforms.time = {value: time}
+    g_renderer.render(g_scene, camera);
 }
 
 function saveAsImage() {
@@ -202,12 +193,12 @@ function saveAsImage() {
         var width = document.getElementById("outputWidth").value;
         var height = document.getElementById("outputHeight").value;
         offscreenRenderer.setSize(width, height);
-        offscreenRenderer.render(scene, camera);
+        offscreenRenderer.render(g_scene, camera);
 
         var strMime = "image/png";
         imgData = offscreenRenderer.domElement.toDataURL(strMime,1.0);
 
-        saveFile(imgData.replace(strMime, strDownloadMime), "qtaRender.png");
+        saveFile(imgData.replace(strMime, "image/octet-stream"), "qtaRender.png");
 
     } catch (e) {
         console.log(e);
@@ -232,6 +223,36 @@ var saveFile = function (strData, filename) {
 //-----------------------------------------------------------------------------
 // Functionality
 //-----------------------------------------------------------------------------
+
+// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
+function Base64DecodeUrl(str) 
+{
+  return (str + '==='.slice((str.length + 3) % 4))
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+}
+
+// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
+function Base64EncodeUrl(str) {
+  return str.replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
+function util_copyToClipboard(text)
+{
+    let element = document.createElement("textarea")
+    element.value = text; 
+    document.body.appendChild(element)
+
+    element.select();
+    element.setSelectionRange(0, 99999)
+    document.execCommand("copy");
+    alert("Saved to clip board");
+    element.remove();
+}
+
+
 // Taken from https://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
 function deepClone(object)
 {
@@ -251,8 +272,8 @@ function hexToRgb(hex) {
 // Taken from https://stackoverflow.com/questions/30359830/how-do-i-clear-three-js-scene/48722282
 function resetScene()
 {
-    while(scene.children.length > 0){ 
-        scene.remove(scene.children[0]); 
+    while(g_scene.children.length > 0){ 
+        g_scene.remove(g_scene.children[0]); 
     }
 }
 function setProgramInputToText(text)
@@ -340,8 +361,8 @@ function quantize()
     try
     {
         resetScene();
-        scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
-        renderer.render(scene, camera);
+        g_scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
+        g_renderer.render(g_scene, camera);
     } catch(err)
     {
         hasCompilationError = true; 
@@ -403,6 +424,11 @@ function updateHTMLFromParams()
     }
 }
 
+
+//-----------------------------------------------------------------------------
+// UI inputs handling
+//-----------------------------------------------------------------------------
+
 function input_setPreset()
 {
     console.log("setPreset()");
@@ -431,18 +457,6 @@ function input_savePreset()
     addPresetToHTML(programName)
 }
 
-function util_copyToClipboard(text)
-{
-    let element = document.createElement("textarea")
-    element.value = text; 
-    document.body.appendChild(element)
-
-    element.select();
-    element.setSelectionRange(0, 99999)
-    document.execCommand("copy");
-    alert("Saved to clip board");
-    element.remove();
-}
 function input_exportPresets()
 {
     console.log("exportPresets()");
@@ -729,19 +743,7 @@ function input_historyStep(isForward)
     quantize();
 }
 
-// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
-function Base64DecodeUrl(str) {
-  return (str + '==='.slice((str.length + 3) % 4))
-    .replace(/-/g, '+')
-    .replace(/_/g, '/')
-}
 
-// Taken (renamed) from https://github.com/joaquimserafim/base64-url/blob/master/index.js
-function Base64EncodeUrl(str) {
-  return str.replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
-}
 
 function getSharedURL()
 {
