@@ -64,6 +64,17 @@ var fragmentShaderUtils = `
 
 
 `
+function createPlanarScene(vs, fs, uniforms)
+{
+    var geometry = new THREE.PlaneBufferGeometry(2, 2);
+    material = new THREE.ShaderMaterial({"uniforms": uniforms, "vertexShader": vs, "fragmentShader": fs});
+
+    mesh = new THREE.Mesh(geometry, material);
+
+    var scene = new THREE.Scene();
+    scene.add(mesh);
+    return scene;
+}
 
 function init() {
 
@@ -87,14 +98,8 @@ function init() {
     document.getElementById("canv").appendChild(renderer.domElement);
     //document.body.appendChild(renderer.domElement);
 
-    //camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
     camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
-    scene = new THREE.Scene();
-    var geometry = new THREE.PlaneBufferGeometry(2, 2);
-    material = new THREE.ShaderMaterial({vertexShader: vertexShaderLiteral, fragmentShader: fragmentShaderLiteral});
-
-    mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+    scene = createPlanarScene(vertexShaderLiteral, fragmentShaderLiteral, {})
     renderer.render(scene, camera);
 
     initializeDefaultPresets();
@@ -334,13 +339,8 @@ function quantize()
     var hasCompilationError = false;
     try
     {
-        var geometry = new THREE.PlaneBufferGeometry(2, 2);
-        material = new THREE.ShaderMaterial({uniforms: {"time": { value: time} }, vertexShader: vertexShaderLiteral, fragmentShader: newFragmentShader});
-
-
-        mesh = new THREE.Mesh(geometry, material);
         resetScene();
-        scene.add(mesh);
+        scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
         renderer.render(scene, camera);
     } catch(err)
     {
@@ -905,8 +905,6 @@ function experimental_exportShaderToy()
 
     //Hack: replace speed with float
     const floatSpeed = speed.toFixed(4);
-
-
 
     var screenSize = getCanvasSize();
 
