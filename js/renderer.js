@@ -297,6 +297,24 @@ var g_quantizeParameters = {
 var g_quantizeParametersStack = [ deepClone(g_quantizeParameters)]
 var g_quantizeParametersStackPointer  = 0
 
+function substituteParametersToGLSLcode(code, program, parameters)
+{
+    var startCol = hexToRgb(parameters.startColor);
+    var endCol = hexToRgb(parameters.endColor);
+
+    return code 
+        .replace("PROGRAM", program)
+        .replace("TRANSFORMATION", parameters.transformationType)
+        .replace("ZOOM", parseFloat(parameters.zoom).toFixed(4))
+        .replace("FOCAL", parseFloat(parameters.focal).toFixed(4))
+        .replace("OFFSET_X", parseFloat(parameters.offsetX).toFixed(4))
+        .replace("OFFSET_Y", parseFloat(parameters.offsetY).toFixed(4))
+        .replace("THRESHOLD", parameters["hasColorThreshold"])
+        .replace("THRESHVALUE", parseFloat(parameters["colorThreshold"]).toFixed(4))
+        .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
+        .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
+}
+
 function setupScene(parameters)
 {
    var fragmentShaderTemplate=`
@@ -306,7 +324,6 @@ function setupScene(parameters)
 
    void main() {
        float t = time;
-       vec2 screenSize = vec2(SCREEN_SIZE);
        float uv_x = uvPos.x + OFFSET_X;
        float uv_y = uvPos.y + OFFSET_Y;
        vec2 resultingUv = TRANSFORMATION(vec2(uv_x, uv_y)*vec2(ZOOM));
@@ -339,24 +356,7 @@ function setupScene(parameters)
         return match+".0";
     });
 
-    var screenSize = getCanvasSize();
-
-    var startCol = hexToRgb(parameters.startColor);
-    var endCol= hexToRgb(parameters.endColor);
-
-    var newFragmentShader = fragmentShaderTemplate
-        .replace("PROGRAM", program)
-        .replace("SCREEN_SIZE", screenSize.width+","+screenSize.height)
-        .replace("TRANSFORMATION", parameters.transformationType)
-        .replace("ZOOM", parseFloat(parameters.zoom).toFixed(4))
-        .replace("FOCAL", parseFloat(parameters.focal).toFixed(4))
-        .replace("OFFSET_X", parseFloat(parameters.offsetX).toFixed(4))
-        .replace("OFFSET_Y", parseFloat(parameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", parameters["hasColorThreshold"])
-        .replace("THRESHVALUE", parseFloat(parameters["colorThreshold"]).toFixed(4))
-        .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
-        .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
-
+    var newFragmentShader = substituteParametersToGLSLcode(fragmentShaderTemplate, program, parameters)
     var scene = createPlanarScene(vertexShaderLiteral, newFragmentShader, {"time": { value: time} })
     return scene;
 }
@@ -914,25 +914,8 @@ function experimental_exportShaderToy()
 
     //Hack: replace speed with float
     const floatSpeed = speed.toFixed(4);
-
-    var screenSize = getCanvasSize();
-
-    var startCol = hexToRgb(g_quantizeParameters.startColor);
-    var endCol= hexToRgb(g_quantizeParameters.endColor);
-
-    var newFragmentShader = fragmentShaderTemplate
-        .replace("PROGRAM", program)
-        .replace("SPEED", floatSpeed)
-        .replace("TRANSFORMATION", g_quantizeParameters.transformationType)
-        .replace("ZOOM", parseFloat(g_quantizeParameters.zoom).toFixed(4))
-        .replace("FOCAL", parseFloat(g_quantizeParameters.focal).toFixed(4))
-        .replace("OFFSET_X", parseFloat(g_quantizeParameters.offsetX).toFixed(4))
-        .replace("OFFSET_Y", parseFloat(g_quantizeParameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", g_quantizeParameters["hasColorThreshold"])
-        .replace("THRESHVALUE", parseFloat(g_quantizeParameters["colorThreshold"]).toFixed(4))
-        .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
-        .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
-
+    var newFragmentShader = substituteParametersToGLSLcode(fragmentShaderTemplate, program, g_quantizeParameters)
+                            .replace("SPEED", floatSpeed)
     util_copyToClipboard(newFragmentShader)
 }
 
