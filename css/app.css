@@ -1,0 +1,39 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.error-input{
+    color:#f00;
+}
+
+#previewGrid
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background: rgba(200,200,200,0.5);
+    text-align: center;
+    z-index: 1000;
+}
+#previewGrid img
+{
+    margin: 5px;
+    border: 1px solid;    
+}
+#previewGrid img:hover
+{
+    border: 1px solid #f00;    
+}
+
+body.waiting * {
+    cursor: progress;
+}
+
+

@@ -10,55 +10,14 @@
     <meta property="og:title" content="QTA - QuantizeThemAll" />
     <meta property="og:type" content="website" />
     <title>QTA - QuantizeThemAll</title>
-    <link rel="stylesheet"
-    href="https://gitcdn.link/repo/Chalarangelo/mini.css/master/dist/mini-default.css" />
+    <link rel="stylesheet" href="css/mini-default.css" />
+    <link rel="stylesheet" href="css/app.css" />
     <script type="text/javascript" src="js/three.min.js"></script>
     <script type="text/javascript" src="js/renderer.js"></script>
     <script type="text/javascript" src="js/generator.js"></script>
     <link rel="icon" href="docs/logo.png" type="image/png" sizes="16x16">
 </head>
 <body>
-<style>
-body {
-    padding: 0;
-    margin: 0;
-}
-canvas {
-    width: 100%;
-    height: 100%;
-}
-
-.error-input{
-    color:#f00;
-}
-
-#previewGrid
-{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width:100%;
-    height:100%;
-    background: rgba(200,200,200,0.5);
-    text-align: center;
-    z-index: 1000;
-}
-#previewGrid img
-{
-    margin: 5px;
-    border: 1px solid;    
-}
-#previewGrid img:hover
-{
-    border: 1px solid #f00;    
-}
-
-body.waiting * {
-    cursor: progress;
-}
-
-</style>
-
 <div id="previewGrid" class="container hidden">
     <div>
         <button class="secondary" onclick="document.getElementById('previewGrid').classList.toggle('hidden');">Close </button>
