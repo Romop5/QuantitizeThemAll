@@ -25,6 +25,10 @@ var fragmentShaderUtils = `
  * Try it yourself: https://romop5.github.io/QuantitizeThemAll/
  * You can also use https://github.com/danilw/shadertoy-to-video-with-FBO to render this shader.
  */
+
+   const vec3 colorStart = vec3(START_COLOR)/255.0;
+   const vec3 colorEnd = vec3(END_COLOR)/255.0;
+   const float threshValue = THRESHVALUE;
    vec2 linear(vec2 uv)
    {
         return uv; 
@@ -60,6 +64,28 @@ var fragmentShaderUtils = `
     return 1.0/x;
    }
 
+   // Color thresholding
+   vec3 thresholdingNone(float level)
+   {
+          return mix(colorStart,colorEnd,level); 
+   }
+
+   vec3 thresholdingColor(float level)
+   {
+          return (level> threshValue)?colorStart:colorEnd;  
+   }
+
+   vec3 thresholdingContour(float level)
+   {
+        float distanceToThreshold = length(level-threshValue);
+        if(distanceToThreshold < 0.1)
+            return colorStart;
+        return colorEnd;
+   }
+   vec3 applyThresholding(float level)
+   {
+        return THRESHOLDING_FUNCTION(level);
+   }
 
 `
 function createPlanarScene(vs, fs, uniforms)
@@ -297,7 +323,7 @@ var g_quantizeParameters = {
     offsetY: 0.0,
     zoom: 1.0,
     focal: 1.0,
-    hasColorThreshold: false,
+    thresholdingType: "none",
     colorThreshold: 0.5
 }
 var g_quantizeParametersStack = [ deepClone(g_quantizeParameters)]
@@ -305,8 +331,10 @@ var g_quantizeParametersStackPointer  = 0
 
 function substituteParametersToGLSLcode(code, program, parameters)
 {
-    var startCol = hexToRgb(parameters.startColor);
-    var endCol = hexToRgb(parameters.endColor);
+    const thresholdFunctionMapping = {"none": "thresholdingNone", "color": "thresholdingColor", "contour": "thresholdingContour"};
+    const functionName = thresholdFunctionMapping[parameters.thresholdingType];
+    const startCol = hexToRgb(parameters.startColor);
+    const endCol = hexToRgb(parameters.endColor);
 
     return code 
         .replace("PROGRAM", program)
@@ -315,7 +343,7 @@ function substituteParametersToGLSLcode(code, program, parameters)
         .replace("FOCAL", parseFloat(parameters.focal).toFixed(4))
         .replace("OFFSET_X", parseFloat(parameters.offsetX).toFixed(4))
         .replace("OFFSET_Y", parseFloat(parameters.offsetY).toFixed(4))
-        .replace("THRESHOLD", parameters["hasColorThreshold"])
+        .replace("THRESHOLDING_FUNCTION", functionName)
         .replace("THRESHVALUE", parseFloat(parameters["colorThreshold"]).toFixed(4))
         .replace("START_COLOR", startCol.r+","+startCol.g+","+startCol.b)
         .replace("END_COLOR", endCol.r+","+endCol.g+","+endCol.b);
@@ -338,15 +366,8 @@ function setupScene(parameters)
        float program = PROGRAM;
        float parameter = clamp(program, 0.0,1.0);
 
-       vec3 colorStart = vec3(START_COLOR)/255.0;
-       vec3 colorEnd = vec3(END_COLOR)/255.0;
-       vec3 resultColor = mix(colorStart, colorEnd, parameter);
-
-       bool hasColorThreshold = THRESHOLD;
-       if(hasColorThreshold)
-       {
-          resultColor = (parameter > THRESHVALUE)?colorStart:colorEnd;  
-       }
+       vec3 resultColor = applyThresholding(parameter);
+        
        gl_FragColor = vec4(resultColor, 1.0);
    }
    `
@@ -391,6 +412,11 @@ function updateConfigFromURL()
             const data = window.location.search.replace("?data=", "");
             const urlSettings = JSON.parse(window.atob(Base64DecodeUrl(data)));
             g_quantizeParameters = urlSettings;
+            // Compability: convert 'hasColorThreshold' to 'thresholdingType'
+            if(g_quantizeParameters.hasOwnProperty("hasColorThreshold"))
+            {
+                g_quantizeParameters["thresholdingType"] = g_quantizeParameters.hasColorThreshold?"color":"none";
+            }
         }
     } catch (err)
     {
@@ -410,7 +436,7 @@ function updateHTMLFromParams()
 
     document.getElementById("startColor").value = g_quantizeParameters.startColor; 
     document.getElementById("endColor").value = g_quantizeParameters.endColor; 
-    document.getElementById("enable_threshold").checked = g_quantizeParameters.hasColorThreshold; 
+    document.getElementById("inputThresholding").value = g_quantizeParameters.thresholdingType; 
     document.getElementById("inputThreshold").value = g_quantizeParameters.colorThreshold; 
 
     document.getElementById("maxIters").value = g_generatorSettings.maxIters;
@@ -557,13 +583,13 @@ function input_updateColor()
     console.log("updateColor()");
     var start = document.getElementById("startColor").value; 
     var end = document.getElementById("endColor").value; 
-    var enabler = document.getElementById("enable_threshold").checked; 
+    var type = document.getElementById("inputThresholding").value; 
     var thresholdSlider= document.getElementById("inputThreshold"); 
     g_quantizeParameters.startColor= start;
     g_quantizeParameters.endColor= end;
-    g_quantizeParameters.hasColorThreshold= enabler;
+    g_quantizeParameters.thresholdingType = type;
     g_quantizeParameters.colorThreshold= thresholdSlider.value;
-    thresholdSlider.disabled = !enabler;
+    thresholdSlider.disabled = (type == "none");
     input_updateProgram();
 }
 
@@ -902,16 +928,7 @@ function experimental_exportShaderToy()
        float y = resultingUv.y + OFFSET_Y;
        float program = PROGRAM;
        float parameter = clamp(program, 0.0,1.0);
-
-       vec3 colorStart = vec3(START_COLOR)/255.0;
-       vec3 colorEnd = vec3(END_COLOR)/255.0;
-       vec3 resultColor = mix(colorStart, colorEnd, parameter);
-
-       bool hasColorThreshold = THRESHOLD;
-       if(hasColorThreshold)
-       {
-          resultColor = (parameter > THRESHVALUE)?colorStart:colorEnd;  
-       }
+       vec3 resultColor = applyThresholding(parameter);
        fragColor = vec4(resultColor, 1.0);
    }
    `

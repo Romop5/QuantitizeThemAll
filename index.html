@@ -236,9 +236,12 @@ body.waiting * {
                   </div>
                   <div class="col-sm-12 col-md-8">
                     <legend>Thresholding</legend>
-                    <label for="enable_threshold">Enable thresholding</label>
-                    <input type="checkbox" id="enable_threshold"
-                    onchange="input_updateColor();">
+                    <select name="thresholdingMenu" id="inputThresholding"
+                          onchange="input_updateColor()">
+                          <option value="none">None</option>
+                          <option value="color">Color</option>
+                          <option value="contour">Contour</option>
+                    </select>
                     <label for="inputThreshold">Threshold position</label>
                     <input type="range" step="0.01" min="0" max="1.0" value="0.5" class="slider"
                      id="inputThreshold" oninput="input_updateColor()">
